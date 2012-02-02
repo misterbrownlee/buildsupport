@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="build-project" basedir=".">
+<project name="YOUR-PROJECT" basedir=".">
 	
   <property file="${basedir}/build.properties"/>
   <property file="${buildsupport.dir}/base/base-build.properties"/>
