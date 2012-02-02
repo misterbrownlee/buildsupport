@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="build-project" basedir=".">
+	
+  <property file="${basedir}/build.properties"/>
+  <property file="${buildsupport.dir}/base/base-build.properties"/>
+  <import file="${buildsupport.dir}/base/base-targets.xml"/>
+  
+  <target name="clean" depends="clean-all" />
+  <target name="test" depends="run-air-tests"/>
+  <target name="build" depends="clean-for-release, run-air-tests, package-air-release"/>
+	
+</project>

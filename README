@@ -1,0 +1,18 @@
+Build Support README
+
+USAGE:
+1) copy (or symlink) the buildsupport directory to your project root
+2) copy buildsupport/example.build.xml to your project root, rename build.xml
+3) copy buildspport/config/local-build.properties.example to your project root, rename build.properties
+4) modify build.properties to represent your local settings
+5) run ant -projecthelp to see what the script already has available
+
+EXTENDING
+- base contains properties, tasks, and macros
+- config allows for passing additional args to mxmlc, etc
+- base-build.properites allows for many configuration changes
+- create environment specific build.propeties files as needed
+- add project specific tasks to build.xml as needed
+- contribute to base-tasks.xml and base-macros.xml if you find them lacking
+
+For specific questions, grief counseling, and cake, please contact brownlee@adobe.com
