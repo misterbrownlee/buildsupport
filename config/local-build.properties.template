@@ -1,0 +1,18 @@
+project.name=unstatusAIR
+buildsupport.dir=${basedir}/buildsupport
+project.dir=${basedir}
+
+#WARNING: flexunit requires the flex home path to not have any spaces 
+flex.dir.home= PATH TO FLEX HOME
+flex.dir.instrumented= #ONLY NEEDED FOR RUNNING CODE COVERAGE
+
+# development, stage, release, etc
+build.type=development
+
+# settings for perforce (used by CI server)
+p4.port=
+p4.user=
+p4.workspace=
+p4.workspace.view=
+
+

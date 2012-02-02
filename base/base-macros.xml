@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="build-macros">
+
+  <property environment="env" />
+  <property file="base-build.properties" />
+
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="${buildsupport.dir}/lib/ant-contrib-1.0b3.jar" />
+  
+  <taskdef resource="flexTasks.tasks" classpath="${flex.dir.home}/ant/lib/flexTasks.jar" />
+
+  <taskdef resource="flexUnitTasks.tasks" classpath="${buildsupport.dir}/lib/flexunit/flexUnitTasks-${flexunit.version}.jar" />
+
+  <!--taskdef name="p4label" classname="org.apache.tools.ant.taskdefs.optional.perforce.P4Label" / -->
+
+  <condition property="isMac">
+    <os family="mac" />
+  </condition>
+
+  <condition property="isWindows">
+    <os family="windows" />
+  </condition>
+
+  <macrodef name="copy-config">
+    <attribute name="build-type" default="${build.type}"/>
+    <attribute name="config-path" default="${config.compiler.additional}"/>
+    <attribute name="copy-path" default="${build.dir.output}"/>
+    <sequential>
+      <var name="resolved.file.name" value="@{build-type}-compile-config.xml"/>
+      <var name="target.config" value="@{config-path}/${resolved.file.name}"/>
+      <var name="config.copy" value="@{copy-path}/${resolved.file.name}"/>
+      <copy file="${target.config}" tofile="${config.copy}" overwrite="true"/>
+      <replace file="${config.copy}" token="[buildsupport]" value="${buildsupport.dir}"/>
+      <replace file="${config.copy}" token="[projectHome]" value="${project.dir}"/>
+    </sequential>
+  </macrodef>
+
+
+  <!-- compile using mxmlc -->
+  <macrodef name="compile-mxmlc" description="MXMLC MACRO">
+    <attribute name="main-file" />
+    <attribute name="output-file" />
+    <attribute name="flex-dir-home" />
+    <attribute name="config-name" default="flex"/>
+    <attribute name="compiler-config"
+      default="@{flex-dir-home}/frameworks/flex-config.xml" />
+    <attribute name="compiler-args"/>
+    <attribute name="debug" default="false" />
+    <sequential>
+      
+      <var name="FLEX_HOME" value="@{flex-dir-home}" />
+
+      <mxmlc 
+        file="@{main-file}" 
+        output="@{output-file}" 
+        allow-source-path-overlap="true" 
+        headless-server="true"
+        configname="@config-name"
+        debug="@{debug}">
+        <license 
+          product="${flashbuilderVersion}" 
+          serial-number="${flashbuilderSerial}" />
+        <load-config filename="@{compiler-config}" />
+        <load-config filename="@{compiler-args}" />
+      </mxmlc>
+    </sequential>
+  </macrodef>
+
+  
+  <!-- marco to create html wrapper for web apps -->
+  <macrodef name="create-flex-html-wrapper">
+    <attribute name="swf" />
+    <attribute name="application" />
+    <attribute name="html-page-title" />
+    <attribute name="build-output-dir" />
+    <attribute name="output-file-name" default="index.html" />
+    <sequential>
+      <var name="FLEX_HOME" value="${flexSDK}" />
+      <var name="player-version" value="10.1" />
+      <html-wrapper 
+        application="@{application}" 
+        title="@{html-page-title}" 
+        swf="@{swf}" 
+        output="@{build-output-dir}" 
+        height="100%" 
+        width="100%" 
+        bgcolor="white" 
+        version-detection="true" 
+        version-major="${player-version}" 
+        version-minor="${player-version}" 
+        version-revision="${player-version}" 
+        express-install="true" history="false" 
+        file="@{output-file-name}" />
+    </sequential>
+  </macrodef>
+
+  
+  <macrodef name="run-flexunit" description="run-flexunit : the flex unit macro ">
+    <attribute name="player" default="flash"/>
+    <attribute name="to-dir"/>
+    <attribute name="source-dir"/>
+    <attribute name="test-dir-source"/>
+    <attribute name="additional-compiler-config"/>
+    <attribute name="flex-dir-home"/>
+    <attribute name="generate-report" default="true"/>
+    <attribute name="report-dir" default="@{to-dir}/report"/>
+    <sequential>
+      <!-- WARNING: flexunit requires the flex home path to not have any spaces -->
+      <var name="FLEX_HOME" value="@{flex-dir-home}/"/>
+      <mkdir dir="@{report-dir}"/>
+      <!-- TODO:  FlexUnit working directory is hardcoded in source.  need fix then re-add workingDir="@{working-dir}/" -->
+      <flexunit player="@{player}" toDir="@{to-dir}/" haltonfailure="false" verbose="false" localTrusted="true" headless="false" debug="true">
+        <!-- DONE: Update FlexUnit source to use compiler config and replace with below.  Then remove the source and library dir references.  -->
+        <load-config filename="@{additional-compiler-config}"/>
+        <source dir="@{source-dir}"/>
+        <testSource dir="@{test-dir-source}">
+          <include name="**/*Test.as"/>
+        </testSource>
+      </flexunit>
+      <junitreport todir="@{report-dir}">
+        <fileset dir="@{to-dir}">
+          <include name="TEST-*.xml"/>
+        </fileset>
+        <report format="frames" todir="@{report-dir}/html"/>
+      </junitreport>
+    </sequential>
+  </macrodef>
+
+
+  <macrodef name="build-run-flexunit">
+    <attribute name="player" default="flash"/>
+    <sequential>
+      <var name="config.copy" value="${build.dir.output.unit}/build-flexunit-config.xml"/>
+      <copy file="${unit.config.compiler.additional}" tofile="${config.copy}" overwrite="true"/>
+      <replace file="${config.copy}" token="[buildsupport]" value="${buildsupport.dir}"/>
+      <replace file="${config.copy}" token="[projectHome]" value="${project.dir}"/>
+      <run-flexunit 
+        to-dir="${unit.dir.to}" 
+        player="@{player}" 
+        source-dir="${unit.dir.source}" 
+        test-dir-source="${unit.dir.source.test}" 
+        additional-compiler-config="${config.copy}" 
+        flex-dir-home="${flex.dir.home}" 
+        report-dir="${unit.dir.to.report}"/>
+      <cleanup-run-flexunit/>
+    </sequential>
+  </macrodef>
+
+  
+    <!-- cleanup-run-flexunit -->
+    <macrodef name="cleanup-run-flexunit" description="clean up for run-flexunit">
+      <sequential>
+        <delete>
+          <fileset dir="${project.dir}">
+            <include name="TestRunner**.*" />
+            <include name="flexUnitDescriptor.xml" />
+          </fileset>
+        </delete>
+      </sequential>
+    </macrodef>
+
+  
+  <!-- cleanup-flexunit-reports -->
+  <macrodef name="cleanup-flexunit-reports">
+    <sequential>
+      <delete includeemptydirs="true">
+        <fileset dir="${build.dir.output.report}">
+          <include name="**/*" />
+        </fileset>
+      </delete>
+    </sequential>
+  </macrodef>
+
+  
+  <!-- cleanup-generated-output -->
+  <macrodef name="cleanup-generated-output">
+    <sequential>
+      <delete includeemptydirs="true">
+        <fileset dir="${build.dir.output}">
+          <include name="**/*" />
+        </fileset>
+      </delete>
+    </sequential>
+  </macrodef>
+  
+  
+  <!-- cleanup-build-only-output -->
+  <macrodef name="cleanup-build">
+    <sequential>
+      <delete includeemptydirs="true">
+        <fileset dir="${build.dir.output.binary}">
+          <include name="**/*" />
+        </fileset>
+      </delete>
+    </sequential>
+  </macrodef>
+  
+  
+  <!-- cleanup-package-only-output -->
+  <macrodef name="cleanup-package">
+    <sequential>
+      <delete includeemptydirs="true">
+        <fileset dir="${build.dir.output.package}">
+          <include name="**/*" />
+        </fileset>
+      </delete>
+    </sequential>
+  </macrodef>
+  
+  <!-- copy runtime shared libraries -->
+  <macrodef name="copy-flex-rsls">
+    <attribute name="flex-dir-home-rsl" />
+    <attribute name="output-dir" />
+    <sequential>
+      <mkdir dir="@{output-dir}" />
+      <copy todir="@{output-dir}" overwrite="true">
+        <fileset dir="@{flex-dir-home-rsl}" includes="**/*.swf" />
+      </copy>
+    </sequential>
+  </macrodef>
+  
+  
+  <!-- macro run-p4label
+  <macrodef name="run-p4label">
+    <attribute name="build-label" />
+    <attribute name="label-view" />
+    <attribute name="build-desc" default="@{build-label}" />
+    <sequential>
+      <p4label port="${p4.port}" user="${p4.user}" client="${p4.workspace}" view="@{label-view}" name="@{build-label}" desc="@{build-desc}" />
+    </sequential>
+  </macrodef -->
+
+  
+  <!-- macro compc compile -->
+  <macrodef name="compc-compile">
+    <attribute name="output-file"/>
+    <attribute name="additional-compiler-config"/>
+    <attribute name="flex-dir-home"/>
+    <sequential>
+      <var name="FLEX_HOME" value="@{flex-dir-home}"/>
+      <compc output="@{output-file}">
+        <license 
+          product="${flashbuilderVersion}" 
+          serial-number="${flashbuilderSerial}" />
+        <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+        <load-config filename="@{additional-compiler-config}"/>
+      </compc>
+    </sequential>
+  </macrodef>
+
+  
+  <!-- compile using mxmlc -->
+  <!--macrodef name="compile-amxmlc">
+    <attribute name="main-file" />
+    <attribute name="output-file" />
+    <attribute name="additional-compiler-config" />
+    <attribute name="flex-dir-home" />
+    <attribute name="debug" default="false" />
+    <sequential>
+      <compile-mxmlc
+              main-file="@{main-file}"
+              output-file="@{output-file}"
+              default-compiler-config="@{flex-dir-home}/frameworks/air-config.xml"
+              flex-dir-home="@{flex-dir-home}"
+              additional-compiler-config="@{additional-compiler-config}"
+              debug="@{debug}" />
+    </sequential>
+  </macrodef -->
+
+  
+  <!-- run using adl -->
+  <macrodef name="run-adl">
+    <attribute name="flex-dir-home" />
+    <attribute name="app-xml" />
+    <attribute name="root-dir" />
+    <sequential>
+      <if>
+        <equals arg1="${isMac}" arg2="true" />
+        <then>
+          <property name="adl" value="@{flex-dir-home}/bin/adl" />
+        </then>
+        <elseif>
+          <equals arg1="${isWindows}" arg2="true" />
+          <then>
+            <property name="adl" value="@{flex-dir-home}/bin/adl.exe" />
+          </then>
+        </elseif>
+      </if>
+      <exec executable="${adl}">
+        <arg value="@{app-xml}" />
+        <arg value="@{root-dir}" />
+      </exec>
+    </sequential>
+  </macrodef>
+
+  
+  <!-- package using adt -->
+  <macrodef name="package-adt">
+    <attribute name="storetype" />
+    <attribute name="keystore" />
+    <attribute name="storepass" />
+    <attribute name="output-package" />
+    <attribute name="app-desc" />
+    <attribute name="input-package" />
+    <attribute name="flex-dir-home" />
+    <attribute name="working-dir" default="${build.dir.output.binary}" />
+    <sequential>
+      <java jar="@{flex-dir-home}/lib/adt.jar" dir="@{working-dir}" fork="true" failonerror="true">
+        <arg value="-package" />
+        <arg value="-storetype" />
+        <arg value="@{storetype}" />
+        <arg value="-keystore" />
+        <arg value="@{keystore}" />
+        <arg value="-storepass" />
+        <arg value="@{storepass}" />
+        <arg value="@{output-package}" />
+        <arg value="@{app-desc}" />
+        <arg value="@{input-package}" />
+        <arg value="-C" />
+        <arg value="@{working-dir}" />
+        <arg value="assets" />
+        <!-- ADD FILE-AND-PATH-OPTIONS when needed -->
+      </java>
+    </sequential>
+  </macrodef>
+
+  
+  <!-- create an app descriptor -->
+  <macrodef name="generate-app-descriptor-from-template">
+    <attribute name="app-desc-template" />
+    <attribute name="app-desc-tofile" />
+    <attribute name="content" />
+    <sequential>
+      <copy file="@{app-desc-template}" tofile="@{app-desc-tofile}" />
+      <replace file="@{app-desc-tofile}" token="[This value will be overwritten by Flash Builder in the output app.xml]" value="@{content}" />
+    </sequential>
+  </macrodef>
+
+</project>

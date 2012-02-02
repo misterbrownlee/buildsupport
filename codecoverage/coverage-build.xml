@@ -1,0 +1,61 @@
+<?xml version="1.0" standalone="no"?>
+
+<project name="CodeCoverage" basedir=".">
+	<property environment="env" />
+		<property name="agentswf" value="${coverageDir}" />
+	<property name="reportFile" value="${build.dir.output.report}/coverageReport.ascc" />	<property name="exportSummary" value="${build.dir.output.report}/coverageSummary.csv" />	<property name="temp.dir" location="${coverageDir}/tmp" />	<property name="xslt.dir" location="${coverageDir}/xslt" />	<property name="coverage.unziped" value="codeCoverageTopLevel.xml" />	<property name="coverage.filtered" value="codeCoverageTopLevel_filtered.xml" />	<property name="coverage.emma" value="vs2_desktop_coverage.xml" />	<property name="saxon.classpath" value="${coverageDir}/saxon9he.jar" />
+	<path id="codecoverage.classpath">
+		<fileset dir="${coverageDir}">
+			<include name="flash.codecoverage.jar" />
+		</fileset>
+	</path>
+
+	<target name="server" description="Initializes the server">
+		<echo message="-agent-swf=${agentswf}	" />		<java classname="com.adobe.flash.codecoverage.CoverageAgentServer" fork="true" spawn="true">
+			<classpath refid="codecoverage.classpath" />
+			<arg value="-agent-swf=${agentswf}" />
+			<jvmarg value="-Xmx512m" />
+		</java>
+	</target>
+
+	<target name="start" description="starts code coverage session">		<java classname="com.adobe.flash.codecoverage.CoverageAgentClient" fork="true">
+			<classpath refid="codecoverage.classpath" />
+			<arg value="start" />
+		</java>
+	</target>
+
+	<target name="stop" description="stops code coverage">		<java classname="com.adobe.flash.codecoverage.CoverageAgentClient" fork="true">
+			<classpath refid="codecoverage.classpath" />
+			<arg value="stop" />
+		</java>
+	</target>
+
+	<target name="shutdown">		<java classname="com.adobe.flash.codecoverage.CoverageAgentClient" fork="true">
+			<classpath refid="codecoverage.classpath" />
+			<arg value="shutdown" />
+		</java>
+		</target>
+
+	<target name="status">		<java classname="com.adobe.flash.codecoverage.CoverageAgentClient" fork="true">
+			<classpath refid="codecoverage.classpath" />
+			<arg value="status" />
+		</java>
+	</target>
+	<target name="save">		<java classname="com.adobe.flash.codecoverage.CoverageAgentClient" fork="true">
+			<classpath refid="codecoverage.classpath" />
+			<arg value="save" />
+			<arg value="-report-file=${reportFile}" />
+		</java>
+	</target>
+
+	<target name="export">		<java classname="com.adobe.flash.codecoverage.CoverageAgentClient" fork="true">
+			<classpath refid="codecoverage.classpath" />
+			<arg value="export" />
+			<arg value="-export-summary=${exportSummary}" />
+		</java>
+	</target>
+
+	<target name="emma-report">
+		<echo>Unzip .ascc report</echo>		<unzip src="${reportFile}" dest="${build.dir.output.report}" />		<echo>Filter out unuseful classes</echo>		<xslt style="${xslt.dir}/filter/main.xsl" in="${build.dir.output.report}/${coverage.unziped}" out="${build.dir.output.report}/${coverage.filtered}" classpath="${saxon.classpath}">			<param name="filter-path" expression="${coverageDir}/filter/filter.xml" />		</xslt>
+		<echo>Generate EMMA formatted report</echo>		<xslt style="${xslt.dir}/emma/main.xsl" in="${build.dir.output.report}/${coverage.filtered}" out="${build.dir.output.report}/${coverage.emma}" classpath="${saxon.classpath}">		</xslt>	</target>
+</project>

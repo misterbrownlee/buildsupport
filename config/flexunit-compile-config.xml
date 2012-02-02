@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flex-config>
+  <compiler>
+    <!-- local libraries -->
+    <library-path append="true">
+      <path-element>[projectHome]/libs</path-element>
+    </library-path>
+    <include-libraries>
+      <library>[buildsupport]/lib/flexunit/</library>
+    </include-libraries>
+  </compiler>
+</flex-config>

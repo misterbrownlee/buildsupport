@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="build-default">
+
+  <!-- default build file, could be copied to tweak for different configurations -->
+  <property name="buildsupport.dir" value=".." />
+
+    <import file="${buildsupport.dir}/base/base-macros.xml" />
+
+  <!-- clean up after flexunit -->
+  <target name="clean-flexunit-reports">
+    <cleanup-flexunit-reports />
+  </target>
+
+  <target name="clean-flexunit-all">
+   <cleanup-flexunit-reports/>
+   <cleanup-run-flexunit/>
+  </target>
+
+  <!-- clean entire output directory -->
+  <target name="clean-all">
+    <cleanup-generated-output />
+  </target>
+
+
+  <!-- clean prior to release -->
+  <target name="clean-build">
+    <cleanup-build/>
+  </target>
+  
+  
+  <!-- clean prior to release -->
+  <target name="clean-for-release">
+    <cleanup-build/>
+    <cleanup-package/>
+  </target>
+
+
+  <!-- run and label build
+  <target name="run-hudson-build-p4label">
+    <run-p4label
+      build-label="${env.BUILD_NUMBER}-${env.BUILD_ID}"
+      label-view="${p4.workspace.view}" />
+  </target -->
+  
+  
+  <!-- build and release -->
+  <!--target name="build-flex">
+    <copy-config />
+    <compile-mxmlc 
+      main-file="${app.file.input}" 
+      output-file="${app.file.output}" 
+      additional-compiler-config="${build.dir.output}/@{build-type}-compile-config.xml" 
+      flex-dir-home="${flex.dir.home}" />
+
+    <create-flex-html-wrapper 
+      swf="${project.name}" 
+      application="${project.name}" 
+      html-page-title="${project.name}" 
+      build-output-dir="${build.dir.output.binary}" 
+      output-file-name="${project.name}.html" />
+
+    <copy-flex-rsls 
+      output-dir="${build.dir.output.binary}" 
+      flex-dir-home-rsl="${flex.dir.home}/frameworks/rsls" />
+  </target-->
+
+
+
+  <target name="build-air-mobile">
+    <copy-config/>
+    <compile-mxmlc
+      main-file="${app.file.input}"
+      output-file="${app.file.output}"
+      config-name="airmobile"
+      compiler-config="${flex.dir.home}/frameworks/airmobile-config.xml"
+      compiler-args="${build.dir.output}/${build.type}-compile-config.xml"
+      flex-dir-home="${flex.dir.home}" />
+  </target>
+  
+  <target name="build-air">
+    <copy-config/>
+    <compile-mxmlc 
+      main-file="${app.file.input}" 
+      output-file="${app.file.output}"
+      compiler-config="${flex.dir.home}/frameworks/air-config.xml" 
+      compiler-args="${build.dir.output}/${build.type}-compile-config.xml"
+      flex-dir-home="${flex.dir.home}" />
+  </target>
+
+  <!-- unit tests -->
+  <!--target name="run-flex-tests">
+    <build-run-flexunit flex-home="${flex.dir.home}" />
+  </target-->
+  
+  <target name="run-air-tests">
+    <build-run-flexunit 
+      player="air"/>
+  </target>
+
+ <target name="package-air-release" depends="build-air">
+   <echo message="coming soon"/>
+ </target>
+ 
+</project>
