@@ -114,14 +114,6 @@
 
 
  <target name="package-air-release" depends="build-air">
-   <!--attribute name="storetype" />
-   <attribute name="keystore" />
-   <attribute name="storepass" />
-   <attribute name="output-package" />
-   <attribute name="app-desc" />
-   <attribute name="input-package" />
-   <attribute name="flex-dir-home" />
-   <attribute name="working-dir" default="${build.dir.output.binary}" /-->
      <generate-app-descriptor/>
      <stage-package-contents />
      <package-adt
