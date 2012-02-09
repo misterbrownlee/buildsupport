@@ -287,11 +287,12 @@
   <!-- package using adt -->
   <macrodef name="package-adt">
     <attribute name="flex-dir-home" default="${flex.dir.home}"/>
+    <attribute name="target" default="air"/>
     <attribute name="storetype" default="${keystore.type}"/>
     <attribute name="keystore" default="${keystore.path}/${keystore.name}"/>
-    <attribute name="storepass" default="${keystore.password.default}"/>
+    <attribute name="storepass" default="${keystore.password}"/>
     <attribute name="package-output-dir" default="${build.dir.output.package}"/>
-    <attribute name="package-output-file" default="${air.package.file}"/>
+    <attribute name="package-output-file" default="${package.file}"/>
     <attribute name="app-descriptor" default="${build.dir.output.binary}/${project.name}-app.xml" />
     <attribute name="package-input"/>
     <attribute name="additional-input" default="${app.assets.dir}"/>
@@ -300,12 +301,10 @@
       <echo message="package-adt :: calling adt in dir ${build.dir.output.binary}"/>
       <echo message="package-adt :: args:"/>
        <echo message="  -package"/>
-        <echo message="  -storetype" />
-        <echo message="  @{storetype}"/>
-        <echo message="  -keystore" />
-        <echo message="  @{keystore}" />
-        <echo message="  -storepass" />
-        <echo message="  @{storepass}" />
+        <echo message="  -target @{target}"/>
+        <echo message="  -storetype @{storetype}" />
+        <echo message="  -keystore @{keystore}" />
+        <echo message="  -storepass @{storepass}" />
         <echo message="  @{package-output-dir}/@{package-output-file}" />
         <echo message="  @{app-descriptor}" />
         <echo message="  @{package-input}" />
@@ -316,6 +315,8 @@
         <echo message="" />
       <java jar="@{flex-dir-home}/lib/adt.jar" dir="${build.dir.output.binary}" fork="true" failonerror="true">
         <arg value="-package"/>
+        <arg value="-target"/>
+        <arg value="@{target}"/>
         <arg value="-storetype"/>
         <arg value="@{storetype}"/>
         <arg value="-keystore"/>
@@ -340,9 +341,9 @@
     <attribute name="descriptor-template" default="${app.descriptor}"/>
     <attribute name="descriptor-tofile" default="${build.dir.output.binary}/${project.name}-app.xml"/>
     <attribute name="replace-token" default="${app.descriptor.token.default}"/>
-    <attribute name="replace-content" default="${app.file.output}"/>
+    <attribute name="replace-content" default="${app.binary.name}"/>
     <sequential>
-      <copy file="@{descriptor-template}" tofile="@{descriptor-tofile}" />
+      <copy file="@{descriptor-template}" tofile="@{descriptor-tofile}" overwrite="true"/>
       <replace file="@{descriptor-tofile}" token="@{replace-token}" value="@{replace-content}" />
     </sequential>
   </macrodef>
@@ -352,5 +353,6 @@
       <echo message="stage-package-contents :: currently not implemented :)"/>
     </sequential>
   </macrodef>
+
 
 </project>

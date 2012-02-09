@@ -3,24 +3,25 @@
 
   <!-- default build file, could be copied to tweak for different configurations -->
   <property file="base-build.properties"/>
-  <import file="${buildsupport.dir}/base/base-macros.xml" />
+  <import file="${buildsupport.dir}/base/base-macros.xml"/>
 
 
   <!-- clean up artifacts from flexunit -->
   <target name="clean-flexunit-reports">
-    <cleanup-flexunit-reports />
+    <cleanup-flexunit-reports/>
   </target>
+
 
   <!-- clean flexunit artifacts and reports -->
   <target name="clean-flexunit-all">
-   <cleanup-flexunit-reports/>
-   <cleanup-run-flexunit/>
+    <cleanup-flexunit-reports/>
+    <cleanup-run-flexunit/>
   </target>
 
 
   <!-- clean entire output directory -->
   <target name="clean-all">
-    <cleanup-generated-output />
+    <cleanup-generated-output/>
   </target>
 
 
@@ -43,82 +44,59 @@
       build-label="${env.BUILD_NUMBER}-${env.BUILD_ID}"
       label-view="${p4.workspace.view}" />
   </target -->
-
-
   <!-- build and release for flex app -->
+
+
   <target name="build-release-flex">
-    <copy-config />
-    <compile-mxmlc
-      main-file="${app.file.input}"
-      output-file="${app.file.output}"
-      additional-compiler-config="${build.dir.output}/@{build-type}-compile-config.xml"
-      flex-dir-home="${flex.dir.home}" />
-
-    <create-flex-html-wrapper
-      swf="${project.name}"
-      application="${project.name}"
-      html-page-title="${project.name}"
-      build-output-dir="${build.dir.output.binary}"
-      output-file-name="${project.name}.html" />
-
-    <copy-flex-rsls
-      output-dir="${build.dir.output.binary}"
-      flex-dir-home-rsl="${flex.dir.home}/frameworks/rsls" />
+    <copy-config/>
+    <compile-mxmlc main-file="${app.file.input}" output-file="${app.binary.output}" additional-compiler-config="${build.dir.output}/@{build-type}-compile-config.xml" flex-dir-home="${flex.dir.home}"/>
+    <create-flex-html-wrapper swf="${project.name}" application="${project.name}" html-page-title="${project.name}" build-output-dir="${build.dir.output.binary}" output-file-name="${project.name}.html"/>
+    <copy-flex-rsls output-dir="${build.dir.output.binary}" flex-dir-home-rsl="${flex.dir.home}/frameworks/rsls"/>
   </target>
 
 
   <target name="build-air-mobile">
     <copy-config/>
-    <compile-mxmlc
-      main-file="${app.file.input}"
-      output-file="${app.file.output}"
-      config-name="airmobile"
-      compiler-config="${flex.dir.home}/frameworks/airmobile-config.xml"
-      compiler-args="${build.dir.output}/generated-compile-config.xml"
-      flex-dir-home="${flex.dir.home}" />
+    <compile-mxmlc main-file="${app.file.input}" output-file="${app.binary.output}" config-name="airmobile" compiler-config="${flex.dir.home}/frameworks/airmobile-config.xml" compiler-args="${build.dir.output}/generated-compile-config.xml" flex-dir-home="${flex.dir.home}"/>
   </target>
 
 
   <target name="build-air">
     <copy-config/>
-    <compile-mxmlc
-      main-file="${app.file.input}"
-      output-file="${app.file.output}"
-      compiler-config="${flex.dir.home}/frameworks/air-config.xml"
-      compiler-args="${build.dir.output}/generated-compile-config.xml"
-      flex-dir-home="${flex.dir.home}" />
+    <compile-mxmlc main-file="${app.file.input}" output-file="${app.binary.output}" compiler-config="${flex.dir.home}/frameworks/air-config.xml" compiler-args="${build.dir.output}/generated-compile-config.xml" flex-dir-home="${flex.dir.home}"/>
   </target>
 
 
   <target name="compile-swc-airmobile">
     <copy-config config-name="${compile.config.name}"/>
-    <compc-compile
-      flex-dir-home="${flex.dir.home}"
-      src-path="${lib.dir.input}"
-      output-file="${lib.file.output}"
-      framework-config-name="airmobile"
-      compiler-args="${build.dir.output}/generated-compile-config.xml"/>
+    <compc-compile flex-dir-home="${flex.dir.home}" src-path="${lib.dir.input}" output-file="${lib.file.output}" framework-config-name="airmobile" compiler-args="${build.dir.output}/generated-compile-config.xml"/>
   </target>
-
-
   <!-- unit tests -->
+
+
   <target name="run-flex-tests">
-    <build-run-flexunit flex-home="${flex.dir.home}" />
+    <build-run-flexunit flex-home="${flex.dir.home}"/>
   </target>
 
 
   <target name="run-air-tests">
-    <build-run-flexunit
-      player="air"/>
+    <build-run-flexunit player="air"/>
   </target>
 
 
- <target name="package-air-release" depends="build-air">
-     <generate-app-descriptor/>
-     <stage-package-contents />
-     <package-adt
-       package-input="${app.file.output}"/>
-       
- </target>
+  <target name="package-air-release" depends="build-air">
+    <generate-app-descriptor/>
+    <stage-package-contents/>
+    <package-adt package-input="${app.binary.output}"/>
+  </target>
+
+  <target name="package-android-release" depends="build-air-mobile">
+    <generate-app-descriptor/>
+    <stage-package-contents/>
+    <package-adt package-input="${app.file.output}"
+      target="apk"
+      package-output-file="${app.package.file.android}"/>
+  </target>
+
 
 </project>
