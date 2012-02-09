@@ -3,6 +3,8 @@
 
   <property environment="env" />
   <property file="base-build.properties" />
+  
+  <property name="delete.verbose" value="true"/>
 
   <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="${buildsupport.dir}/lib/ant-contrib-1.0b3.jar" />
 
@@ -47,9 +49,7 @@
     <attribute name="compiler-args"/>
     <attribute name="debug" default="false" />
     <sequential>
-
       <var name="FLEX_HOME" value="@{flex-dir-home}" />
-
       <mxmlc
         file="@{main-file}"
         output="@{output-file}"
@@ -64,6 +64,7 @@
         <load-config filename="@{compiler-config}" />
         <load-config filename="@{compiler-args}" />
       </mxmlc>
+      <echo message="compile-mxmlc :: finished"/>
     </sequential>
   </macrodef>
 
@@ -131,10 +132,10 @@
   <macrodef name="build-run-flexunit">
     <attribute name="player" default="flash"/>
     <sequential>
-      <var name="config.copy" value="${build.dir.output.unit}/build-flexunit-config.xml"/>
+      <var name="config.copy" value="${build.dir.output.unit}/generated-flexunit-config.xml"/>
       <copy file="${unit.config.compiler.additional}" tofile="${config.copy}" overwrite="true"/>
       <replace file="${config.copy}" token="[buildsupport]" value="${buildsupport.dir}"/>
-      <replace file="${config.copy}" token="[projectHome]" value="${project.dir}"/>
+      <replace file="${config.copy}" token="[project-dir]" value="${project.dir}"/>
       <run-flexunit
         to-dir="${unit.dir.to}"
         player="@{player}"
@@ -144,6 +145,7 @@
         flex-dir-home="${flex.dir.home}"
         report-dir="${unit.dir.to.report}"/>
       <cleanup-run-flexunit/>
+      <echo message="build-run-flexunit :: finished"/>
     </sequential>
   </macrodef>
 
@@ -151,7 +153,7 @@
     <!-- cleanup-run-flexunit -->
     <macrodef name="cleanup-run-flexunit" description="clean up for run-flexunit">
       <sequential>
-        <delete>
+        <delete verbose="${delete.verbose}">
           <fileset dir="${project.dir}">
             <include name="TestRunner**.*" />
             <include name="flexUnitDescriptor.xml" />
@@ -164,7 +166,7 @@
   <!-- cleanup-flexunit-reports -->
   <macrodef name="cleanup-flexunit-reports">
     <sequential>
-      <delete includeemptydirs="true">
+      <delete includeemptydirs="true" verbose="${delete.verbose}">
         <fileset dir="${build.dir.output.report}">
           <include name="**/*" />
         </fileset>
@@ -176,7 +178,7 @@
   <!-- cleanup-generated-output -->
   <macrodef name="cleanup-generated-output">
     <sequential>
-      <delete includeemptydirs="true">
+      <delete includeemptydirs="true" verbose="${delete.verbose}">
         <fileset dir="${build.dir.output}">
           <include name="**/*" />
         </fileset>
@@ -188,7 +190,7 @@
   <!-- cleanup-build-only-output -->
   <macrodef name="cleanup-build">
     <sequential>
-      <delete includeemptydirs="true" verbose="true" failonerror="false">
+      <delete includeemptydirs="true" verbose="${delete.verbose}" failonerror="false">
         <fileset dir="${build.dir.output.binary}">
           <include name="**/*" />
         </fileset>
@@ -200,7 +202,7 @@
   <!-- cleanup-package-only-output -->
   <macrodef name="cleanup-package">
     <sequential>
-      <delete includeemptydirs="true" failonerror="false">
+      <delete includeemptydirs="true" verbose="${delete.verbose}" failonerror="false">
         <fileset dir="${build.dir.output.package}">
           <include name="**/*" />
         </fileset>
@@ -251,6 +253,7 @@
             <load-config filename="@{compiler-config}"/>
             <load-config filename="@{compiler-args}"/>
           </compc>
+      <echo message="compc-compile :: macro finished"/>
       </sequential>
   </macrodef>
 
@@ -283,43 +286,70 @@
 
   <!-- package using adt -->
   <macrodef name="package-adt">
-    <attribute name="storetype" />
-    <attribute name="keystore" />
-    <attribute name="storepass" />
-    <attribute name="output-package" />
-    <attribute name="app-desc" />
-    <attribute name="input-package" />
-    <attribute name="flex-dir-home" />
-    <attribute name="working-dir" default="${build.dir.output.binary}" />
+    <attribute name="flex-dir-home" default="${flex.dir.home}"/>
+    <attribute name="storetype" default="${keystore.type}"/>
+    <attribute name="keystore" default="${keystore.path}/${keystore.name}"/>
+    <attribute name="storepass" default="${keystore.password.default}"/>
+    <attribute name="package-output-dir" default="${build.dir.output.package}"/>
+    <attribute name="package-output-file" default="${air.package.file}"/>
+    <attribute name="app-descriptor" default="${build.dir.output.binary}/${project.name}-app.xml" />
+    <attribute name="package-input"/>
+    <attribute name="additional-input" default="${app.assets.dir}"/>
     <sequential>
-      <java jar="@{flex-dir-home}/lib/adt.jar" dir="@{working-dir}" fork="true" failonerror="true">
-        <arg value="-package" />
-        <arg value="-storetype" />
-        <arg value="@{storetype}" />
-        <arg value="-keystore" />
-        <arg value="@{keystore}" />
-        <arg value="-storepass" />
-        <arg value="@{storepass}" />
-        <arg value="@{output-package}" />
-        <arg value="@{app-desc}" />
-        <arg value="@{input-package}" />
-        <arg value="-C" />
-        <arg value="@{working-dir}" />
-        <arg value="assets" />
-        <!-- ADD FILE-AND-PATH-OPTIONS when needed -->
+      <mkdir dir="@{package-output-dir}"/>
+      <echo message="package-adt :: calling adt in dir ${build.dir.output.binary}"/>
+      <echo message="package-adt :: args:"/>
+       <echo message="  -package"/>
+        <echo message="  -storetype" />
+        <echo message="  @{storetype}"/>
+        <echo message="  -keystore" />
+        <echo message="  @{keystore}" />
+        <echo message="  -storepass" />
+        <echo message="  @{storepass}" />
+        <echo message="  @{package-output-dir}/@{package-output-file}" />
+        <echo message="  @{app-descriptor}" />
+        <echo message="  @{package-input}" />
+        <echo message="  -C" />
+        <echo message="  ${build.src.dir}"/>
+        <echo message="  @{additional-input}" />
+        <echo message="-----------------------------------" />
+        <echo message="" />
+      <java jar="@{flex-dir-home}/lib/adt.jar" dir="${build.dir.output.binary}" fork="true" failonerror="true">
+        <arg value="-package"/>
+        <arg value="-storetype"/>
+        <arg value="@{storetype}"/>
+        <arg value="-keystore"/>
+        <arg value="@{keystore}"/>
+        <arg value="-storepass"/>
+        <arg value="@{storepass}"/>
+        <arg value="@{package-output-dir}/@{package-output-file}" />
+        <arg value="@{app-descriptor}"/>
+        <arg value="@{package-input}"/>
+        <arg value="-C"/>
+        <arg value="${build.src.dir}"/>
+        <arg value="@{additional-input}"/>
+        <!-- could override additional input with more -C args if needed -->
       </java>
+    <echo message="package-adt :: finished"/>
     </sequential>
   </macrodef>
 
 
   <!-- create an app descriptor -->
   <macrodef name="generate-app-descriptor">
-    <attribute name="app-desc-template" />
-    <attribute name="app-desc-tofile" />
-    <attribute name="content" />
+    <attribute name="descriptor-template" default="${app.descriptor}"/>
+    <attribute name="descriptor-tofile" default="${build.dir.output.binary}/${project.name}-app.xml"/>
+    <attribute name="replace-token" default="${app.descriptor.token.default}"/>
+    <attribute name="replace-content" default="${app.file.output}"/>
     <sequential>
-      <copy file="@{app-desc-template}" tofile="@{app-desc-tofile}" />
-      <replace file="@{app-desc-tofile}" token="[This value will be overwritten by Flash Builder in the output app.xml]" value="@{content}" />
+      <copy file="@{descriptor-template}" tofile="@{descriptor-tofile}" />
+      <replace file="@{descriptor-tofile}" token="@{replace-token}" value="@{replace-content}" />
+    </sequential>
+  </macrodef>
+  
+  <macrodef name="stage-package-contents">
+    <sequential>
+      <echo message="stage-package-contents :: currently not implemented :)"/>
     </sequential>
   </macrodef>
 

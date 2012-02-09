@@ -3,7 +3,7 @@
   <compiler>
     <!-- local libraries -->
     <library-path append="true">
-      <path-element>[projectHome]/libs</path-element>
+      <path-element>[project-dir]/libs</path-element>
     </library-path>
     <include-libraries>
       <library>[buildsupport]/lib/flexunit/</library>
