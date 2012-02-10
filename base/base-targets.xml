@@ -75,7 +75,7 @@
 
 
   <target name="run-flex-tests">
-    <build-run-flexunit flex-home="${flex.dir.home}"/>
+    <build-run-flexunit />
   </target>
 
 
