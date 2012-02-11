@@ -1,0 +1,15 @@
+<project name="target.build.flex">
+
+  <property file="${buildsupport.dir}/base/base-build.properties"/>
+  <import file="${buildsupport.dir}/base/base-macros.xml"/>
+
+  <target name="build-flex">
+    <copy-config/>
+    <compile-mxmlc 
+      main-file="${app.file.input}" 
+      output-file="${app.file.output}" 
+      compiler-args="${build.dir.output}/generated-compile-config.xml" 
+      flex-dir-home="${flex.dir.home}"/>
+  </target>
+
+</project>

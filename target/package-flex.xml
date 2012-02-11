@@ -1,0 +1,23 @@
+<project name="target.build.air">
+
+  <property file="${buildsupport.dir}/base/base-build.properties"/>
+  <import file="${buildsupport.dir}/base/base-macros.xml"/>
+
+  <target name="package-flex">
+    <mkdir dir="${build.dir.output.package}"/>
+    <copy toDir="${build.dir.output.package}">
+      <fileset dir="${build.dir.output.binary}">
+        <include name="**/*.*"/>
+      </fileset>
+    </copy>
+    <create-flex-html-wrapper
+      swf="${project.name}"
+      application="${project.name}"
+      html-page-title="${project.name}"
+      output-file-name="${project.name}.html"/>
+    <copy-flex-rsls
+      output-dir="${build.dir.output.package}"
+      flex-dir-home-rsl="${flex.dir.home}/frameworks/rsls"/>
+  </target>
+
+</project>

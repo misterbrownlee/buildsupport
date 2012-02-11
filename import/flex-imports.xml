@@ -1,0 +1,10 @@
+<project name="flex-imports">
+  
+  <property file="${buildsupport.dir}/base/base-build.properties"/>
+  <import file="${buildsupport.dir}/target/clean-build.xml"/>
+  <import file="${buildsupport.dir}/target/clean-tests.xml"/>  
+  <import file="${buildsupport.dir}/target/build-flex.xml"/>
+  <import file="${buildsupport.dir}/target/test-flex.xml"/>
+  <import file="${buildsupport.dir}/target/package-flex.xml"/>
+  
+</project>

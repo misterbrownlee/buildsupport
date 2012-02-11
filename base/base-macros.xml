@@ -74,7 +74,7 @@
     <attribute name="swf" />
     <attribute name="application" />
     <attribute name="html-page-title" />
-    <attribute name="build-output-dir" />
+    <attribute name="package-output-dir" default="${build.dir.output.package}"/>
     <attribute name="output-file-name" default="index.html" />
     <sequential>
       <var name="FLEX_HOME" value="${flexSDK}" />
@@ -83,7 +83,7 @@
         application="@{application}"
         title="@{html-page-title}"
         swf="@{swf}"
-        output="@{build-output-dir}"
+        output="@{package-output-dir}"
         height="100%"
         width="100%"
         bgcolor="white"

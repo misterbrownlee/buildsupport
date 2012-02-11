@@ -1,0 +1,25 @@
+<project name="target.clean.build">
+  
+  <property file="${buildsupport.dir}/base/base-build.properties"/>
+  <import file="${buildsupport.dir}/base/base-macros.xml"/>
+
+
+  <!-- clean entire output directory -->
+  <target name="clean-all">
+    <cleanup-generated-output/>
+  </target>
+
+
+  <!-- clean up build output -->
+  <target name="clean-build">
+    <cleanup-build/>
+  </target>
+
+
+  <!-- clean prior build and packaging -->
+  <target name="clean-for-package">
+    <cleanup-build/>
+    <cleanup-package/>
+  </target>
+  
+</project>

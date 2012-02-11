@@ -1,0 +1,12 @@
+<project name="target.package.air">
+  
+  <property file="${buildsupport.dir}/base/base-build.properties"/>
+  <import file="${buildsupport.dir}/base/base-macros.xml"/>
+  
+  <target name="package-air-release" depends="build-air">
+    <generate-app-descriptor/>
+    <stage-package-contents/>
+    <package-adt package-input="${app.binary.output}"/>
+  </target>
+  
+</project>

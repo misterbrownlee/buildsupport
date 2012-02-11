@@ -1,0 +1,16 @@
+<project name="target.build.air">
+  
+  <property file="${buildsupport.dir}/base/base-build.properties"/>
+  <import file="${buildsupport.dir}/base/base-macros.xml"/>
+
+  <target name="build-air">
+    <copy-config/>
+    <compile-mxmlc 
+      main-file="${app.file.input}" 
+      output-file="${app.binary.output}" 
+      compiler-config="${flex.dir.home}/frameworks/air-config.xml" 
+      compiler-args="${build.dir.output}/generated-compile-config.xml" 
+      flex-dir-home="${flex.dir.home}"/>
+  </target>
+  
+</project>
