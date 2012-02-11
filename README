@@ -10,6 +10,14 @@ Usage:
 6) run ant -projecthelp to see what the script already has available
 7) add tasks to your build.xml, using resources from base-tasks.xml and base-macros.xml as needed
 
+EXAMPLE PROJECTS:
+https://github.com/tehfoo/BuildsupportFlexExample
+
+TODO:
+- example simple air project with packaging
+- example simple mobile project with packaging
+- example project with library and dependent flex app
+
 
 Assumption:
 Most projects follow a simple pattern of a base directory, with source in an src folder, libraries in a libs
@@ -64,8 +72,3 @@ More on Extending
 - update flexunit, antcontrib, and flexpmd versions as needed
 
 For specific questions, grief counseling, and cake, please contact https://github.com/tehfoo
-
-TODO:
-- example simple flex project
-- example simple air project with packaging
-- example project with library and dependent flex app
