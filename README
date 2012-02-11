@@ -4,11 +4,11 @@ Usage:
 1) clone buildsupport into to your project root
 1a) to ease use on multiple projects, clone to a tools directory, and symlink into your project root
 2) copy buildsupport/example.build.xml to your project root, rename build.xml
-3) copy buildsupport/example.build.properties to your project root, rename build.properties
-4) modify build.properties to represent your local settings
-5) modify build.xml to set your project name and import your properties file
-6) run ant -projecthelp to see what the script already has available
-7) add tasks to your build.xml, using resources from base-tasks.xml and base-macros.xml as needed
+3) copy buildsupport/example.build.properties to <project-root>/build, rename build.properties
+4) modify build.properties to represent your local settings (path to flex sdk, project name)
+5) run ant -projecthelp to see what the script already has available
+6) add tasks to your build.xml, change the buildsupport imports, or use resources 
+     from base-tasks.xml and base-macros.xml as needed
 
 EXAMPLE PROJECTS:
 https://github.com/tehfoo/BuildsupportFlexExample
