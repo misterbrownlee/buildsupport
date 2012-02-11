@@ -2,13 +2,16 @@ Build Support README
 
 Usage:
 1) clone buildsupport into to your project root
-1a) to ease use on multiple projects, clone to a tools directory, and symlink into your project root
+1a) to ease use on multiple projects, clone to a tools directory, 
+   and symlink into your project root
 2) copy buildsupport/example.build.xml to your project root, rename build.xml
-3) copy buildsupport/example.build.properties to <project-root>/build, rename build.properties
-4) modify build.properties to represent your local settings (path to flex sdk, project name)
+3) copy buildsupport/example.build.properties to <project-root>/build, 
+   rename build.properties
+4) modify build.properties to represent your local settings (path to 
+   flex sdk, project name)
 5) run ant -projecthelp to see what the script already has available
-6) add tasks to your build.xml, change the buildsupport imports, or use resources 
-     from base-tasks.xml and base-macros.xml as needed
+6) add tasks to your build.xml, change the buildsupport imports, 
+   or use resources from base-tasks.xml and base-macros.xml as needed
 
 EXAMPLE PROJECTS:
 https://github.com/tehfoo/BuildsupportFlexExample
@@ -19,56 +22,68 @@ TODO:
 - example project with library and dependent flex app
 
 
-Assumption:
-Most projects follow a simple pattern of a base directory, with source in an src folder, libraries in a libs
-folder, and no drama.  If that's the case, you can set project.dir and flex.home.dir properties,  and you 
-should be all set.  If your structure is different (more complex), you will probably need to create more 
-specific ant targets or provided custom compiler configuration to make this all work.
+Assumption: Most projects follow a simple pattern of a base directory, with
+source in an src folder, libraries in a libs folder, and no drama. If that's
+the case, you can set project.dir and flex.home.dir properties, and you should
+be all set. If your structure is different (more complex), you will probably
+need to create more specific ant targets or provided custom compiler
+configuration to make this all work.
 
 
-Notes:
-In build.properties, you can add some details specific to the project configuration. These are items that 
-typically differ from one computer to another, and will mainly be used by any custom targets you make.
-Important: The declaration of the path to build support must be defined before importing base-build-properties
-or base-tasks.xml,since that's how things are referenced. Leave that line in you build.properties, or otherwise
-set buildsupport.dir before trying to use the base properties, tasks, and macros.  If you followed 1a above, 
-for some reason your symlink is not named 'buildsupport', you should use that property to map the new name.
-You can also override any of the base-build.properties in your build.properties, hopefully there's no need
-for that but if you know Ant and like to mess with stuff than feel free. Remember, overriding will only work 
-if build.properties is loaded before base-build.properties in build.xml.  
+Notes: In build.properties, you can add some details specific to the project
+configuration. These are items that typically differ from one computer to
+another, and will mainly be used by any custom targets you make. Important:
+The declaration of the path to build support must be defined before importing
+base-build-properties or base-tasks.xml,since that's how things are
+referenced. Leave that line in you build.properties, or otherwise set
+buildsupport.dir before trying to use the base properties, tasks, and macros.
+If you followed 1a above, for some reason your symlink is not named
+'buildsupport', you should use that property to map the new name. You can also
+override any of the base-build.properties in your build.properties, hopefully
+there's no need for that but if you know Ant and like to mess with stuff than
+feel free. Remember, overriding will only work if build.properties is loaded
+before base-build.properties in build.xml.
 
-For setting up your build.xml, be sure to import you properties file, as well as build-base.properties 
-and base-tasks.xml.  That will initialize the whole buildsupport stack of goodness, including
-the properties we just set up. Then, you can add your own ant tasks which leverage or add to the 
-tasks declared in base-tasks.xml
+For setting up your build.xml, be sure to import you properties file, as well
+as build-base.properties and base-tasks.xml. That will initialize the whole
+buildsupport stack of goodness, including the properties we just set up. Then,
+you can add your own ant tasks which leverage or add to the tasks declared in
+base-tasks.xml
 
-Example: if you have an air project, you can build it by calling the build-air base task
-- <target name="build" depends="clean-build, air-build" />
+Example: if you have an air project, you can build it by calling the build-air
+base task - <target name="build" depends="clean-build, air-build" />
 
-Your target is named build, and all it contains is dependency calls to clean-build and air-build
-in the base-tasks.xml.  Simple and clean, should work for most projects that follow a standard configuration.
+Your target is named build, and all it contains is dependency calls to
+clean-build and air-build in the base-tasks.xml. Simple and clean, should work
+for most projects that follow a standard configuration.
 
+Extended Compile Configuration: You can change the arguments passed to the
+mxmlc and comc compile tasks by providing a config to the compiler. The base
+tasks are calling a copy-config macro which copies a config file into place
+for the compiler to consume. Here's how:
 
-Extended Compile Configuration:
-You can change the arguments passed to the mxmlc and comc compile tasks by providing a config to the 
-compiler.  The base tasks are calling a copy-config macro which copies a config file into place for 
-the compiler to consume.  Here's how:
-- To replace the default config, you must specify the location and name of your own config file
-- Do this by overriding these properties in your build.properties file:
-  config.compiler.additional=${project.dir}/build <-- location of your compile-config.xml
-  compile.config.name=yourname  <-- the name of your config: yourname-compile-config.xml
-Note you're only changing the path to, and 'yourname' part of, the config file.  The rest of the file name
-should remain the same.  You can use -dump-config from a working compile (like in FB) to see all the
-options and configuration for a working IDE project.
+- To replace the default config, you must specify the location and name 
+   of your own config file
 
+- Do this by overriding these properties in your build.properties file:  
+  config.compiler.additional=${project.dir}/build 
+    (location of your compile-config.xml)
+  compile.config.name=yourname  
+    (the name of your config: yourname-compile-config.xml)
 
-More on Extending
-- base contains properties, tasks, and macros
-- config allows for passing additional args to mxmlc, etc
-- base-build.properites allows for many configuration changes
-- create environment specific build.propeties files as needed
-- add project specific tasks to build.xml as needed
-- contribute to base-tasks.xml and base-macros.xml if you find them lacking
+Note you're only changing the path to, and 'yourname' part of, the config
+file. The rest of the file name should remain the same. You can use
+-dump-config from a working compile (like in FB) to see all the options and
+configuration for a working IDE project.
+
+More on Extending 
+- base contains properties, tasks, and macros 
+- config allows for passing additional args to mxmlc, etc 
+- base-build.properites allows for many configuration changes 
+- create environment specific build.propeties files as needed 
+- add project specific tasks to build.xml as needed 
+- contribute to base-tasks.xml and base-macros.xml if you find them lacking 
 - update flexunit, antcontrib, and flexpmd versions as needed
 
-For specific questions, grief counseling, and cake, please contact https://github.com/tehfoo
+For specific questions, grief counseling, and cake, please contact:
+https://github.com/tehfoo
