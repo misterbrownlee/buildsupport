@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="base-targets">
   
-  <-- DEPRECATED: import these tasks from individual target xml files -->
+  <!-- DEPRECATED: import these tasks from individual target xml files -->
 
   <!-- default build file, could be copied to tweak for different configurations -->
   <property file="base-build.properties"/>

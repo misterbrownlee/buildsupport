@@ -1,0 +1,16 @@
+<project name="target.compile.swc.air">
+  
+  <property file="${buildsupport.dir}/base/base-build.properties"/>
+  <import file="${buildsupport.dir}/base/base-macros.xml"/>
+
+
+  <target name="compile-swc-air">
+    <copy-config config-name="${compile.config.name}"/>
+    <compc-compile flex-dir-home="${flex.dir.home}" 
+      src-path="${lib.dir.input}" 
+      output-file="${lib.file.output}" 
+      framework-config-name="air" 
+      compiler-args="${build.dir.output}/generated-compile-config.xml"/>
+  </target>
+  
+</project>

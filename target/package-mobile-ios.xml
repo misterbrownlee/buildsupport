@@ -1,12 +1,15 @@
-<project name="target.package.air">
+<project name="target.package.mobile.ios">
   
   <property file="${buildsupport.dir}/base/base-build.properties"/>
   <import file="${buildsupport.dir}/base/base-macros.xml"/>
   
-  <target name="package-air">
+  
+  <target name="package-mobile-ios">
     <generate-app-descriptor/>
     <stage-package-contents/>
-    <package-adt package-input="${app.binary.output}"/>
+    <package-adt package-input="${app.file.output}"
+      target="apk"
+      package-output-file="${app.package.file.android}"/>
   </target>
   
 </project>
