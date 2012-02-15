@@ -1,6 +1,7 @@
 <project name="flex-imports">
+
+  <import file="${buildsupport.dir}/import/base-imports.xml"/>
   
-  <property file="${buildsupport.dir}/base/base-build.properties"/>
   <import file="${buildsupport.dir}/target/clean-build.xml"/>
   <import file="${buildsupport.dir}/target/clean-tests.xml"/>  
   <import file="${buildsupport.dir}/target/compile-swc-flex.xml"/>

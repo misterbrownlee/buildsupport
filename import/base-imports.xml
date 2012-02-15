@@ -1,0 +1,6 @@
+<project name="base-imports">
+  
+  <property file="${buildsupport.dir}/base/base-build.properties"/>
+  <import file="${buildsupport.dir}/base/base-macros.xml"/>
+  
+</project>

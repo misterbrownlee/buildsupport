@@ -1,0 +1,12 @@
+<project name="air-imports">
+
+  <import file="${buildsupport.dir}/import/base-imports.xml"/>
+  
+  <import file="${buildsupport.dir}/target/clean-build.xml"/>
+  <import file="${buildsupport.dir}/target/clean-tests.xml"/>  
+  <import file="${buildsupport.dir}/target/compile-swc-air.xml"/>
+  <import file="${buildsupport.dir}/target/build-air.xml"/>
+  <import file="${buildsupport.dir}/target/test-air.xml"/>
+  <import file="${buildsupport.dir}/target/package-air.xml"/>
+  
+</project>

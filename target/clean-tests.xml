@@ -1,7 +1,4 @@
 <project name="target.clean.tests">
-  
-  <property file="${buildsupport.dir}/base/ase-build.properties"/>
-  <import file="${buildsupport.dir}/base/base-macros.xml"/>
 
   <!-- clean up artifacts from flexunit -->
   <target name="clean-flexunit-reports">

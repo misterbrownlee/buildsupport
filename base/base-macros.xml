@@ -2,7 +2,6 @@
 <project name="build-macros">
 
   <property environment="env" />
-  <property file="base-build.properties" />
   
   <property name="delete.verbose" value="true"/>
 
@@ -23,7 +22,7 @@
   </condition>
 
   <macrodef name="copy-config">
-    <attribute name="config-name" default="project"/>
+    <attribute name="config-name" default="${compile.config.name}"/>
     <attribute name="config-path" default="${config.compiler.additional}"/>
     <attribute name="copy-path" default="${build.dir.output}"/>
     <sequential>
@@ -287,33 +286,61 @@
   <!-- package using adt -->
   <macrodef name="package-adt">
     <attribute name="flex-dir-home" default="${flex.dir.home}"/>
-    <attribute name="target" default="air"/>
-    <attribute name="storetype" default="${keystore.type}"/>
-    <attribute name="keystore" default="${keystore.path}/${keystore.name}"/>
-    <attribute name="storepass" default="${keystore.password}"/>
-    <attribute name="package-output-dir" default="${build.dir.output.package}"/>
-    <attribute name="package-output-file" default="${package.file}"/>
-    <attribute name="app-descriptor" default="${build.dir.output.binary}/${project.name}-app.xml" />
+    <attribute name="target" 
+      default="air"/>
+    <attribute name="storetype" 
+      default="${keystore.type}"/>
+    <attribute name="keystore" 
+      default="${keystore.path}/${keystore.name}"/>
+    <attribute name="storepass" 
+      default="${keystore.password}"/>
+    <attribute name="package-output-dir" 
+      default="${build.dir.output.package}"/>
+    <attribute name="provisioning-profile" default=""/>
+    <attribute name="package-output-file" 
+      default="${app.file.output}"/>
+    <attribute name="app-descriptor" 
+      default="${build.dir.output.binary}/${project.name}-app.xml" />
     <attribute name="package-input"/>
-    <attribute name="additional-input" default="${app.assets.dir}"/>
+    <attribute name="additional-input" 
+      default="${app.assets.dir}"/>
     <sequential>
       <mkdir dir="@{package-output-dir}"/>
+      <var name="provisioning-arg" value=""/>
+      <var name="provisioning-path" value=""/>
+      <if>
+         <or>
+         <equals arg1="@{target}" arg2="ipa-test"/> 
+         <equals arg1="@{target}" arg2="ipa-debug"/>
+         <equals arg1="@{target}" arg2="ipa-app-store"/>
+         <equals arg1="@{target}" arg2="ipa-ad-hoc"/>
+          </or> 
+       <then>
+         <var name="provisioning-arg" value="-provisioning-profile"/> 
+         <var name="provisioning-path" value="@{provisioning-profile}" />
+       </then>
+     </if>
       <echo message="package-adt :: calling adt in dir ${build.dir.output.binary}"/>
       <echo message="package-adt :: args:"/>
-       <echo message="  -package"/>
-        <echo message="  -target @{target}"/>
-        <echo message="  -storetype @{storetype}" />
-        <echo message="  -keystore @{keystore}" />
-        <echo message="  -storepass @{storepass}" />
-        <echo message="  @{package-output-dir}/@{package-output-file}" />
-        <echo message="  @{app-descriptor}" />
-        <echo message="  @{package-input}" />
-        <echo message="  -C" />
-        <echo message="  ${build.src.dir}"/>
-        <echo message="  @{additional-input}" />
-        <echo message="-----------------------------------" />
-        <echo message="" />
-      <java jar="@{flex-dir-home}/lib/adt.jar" dir="${build.dir.output.binary}" fork="true" failonerror="true">
+      <echo message="  -package"/>
+      <echo message="  -target @{target}"/>
+      <echo message="  -storetype @{storetype}"/>
+      <echo message="  -keystore @{keystore}"/>
+      <echo message="  -storepass @{storepass}"/>
+      <echo message="  ${provisioning-arg}"/>
+      <echo message="  ${provisioning-path}"/>
+      <echo message="  @{package-output-dir}/@{package-output-file} (output)"/>
+      <echo message="  @{app-descriptor} (descriptor)"/>
+      <echo message="  @{package-input} (input)"/>
+      <echo message="  -C"/>
+      <echo message="  ${build.src.dir}"/>
+      <echo message="  @{additional-input}"/>
+      <echo message="-----------------------------------" />
+      <echo message=""/>
+      <java
+        jar="@{flex-dir-home}/lib/adt.jar"
+        dir="${build.dir.output.binary}"
+        fork="true" failonerror="true">
         <arg value="-package"/>
         <arg value="-target"/>
         <arg value="@{target}"/>
@@ -323,7 +350,9 @@
         <arg value="@{keystore}"/>
         <arg value="-storepass"/>
         <arg value="@{storepass}"/>
-        <arg value="@{package-output-dir}/@{package-output-file}" />
+        <arg value="${provisioning-arg}"/>
+        <arg value="${provisioning-path}"/>
+        <arg value="@{package-output-dir}/@{package-output-file}"/>
         <arg value="@{app-descriptor}"/>
         <arg value="@{package-input}"/>
         <arg value="-C"/>

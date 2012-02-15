@@ -1,8 +1,4 @@
 <project name="target.compile.swc.mobile">
-  
-  <property file="${buildsupport.dir}/base/base-build.properties"/>
-  <import file="${buildsupport.dir}/base/base-macros.xml"/>
-
 
   <target name="compile-swc-mobile">
     <copy-config config-name="${compile.config.name}"/>

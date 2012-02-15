@@ -1,8 +1,5 @@
 <project name="target.test.air">
-  
-  <property file="${buildsupport.dir}/base/base-build.properties"/>
-  <import file="${buildsupport.dir}/base/base-macros.xml"/>
-  
+
   <target name="test-air">
     <build-run-flexunit player="air"/>
   </target>

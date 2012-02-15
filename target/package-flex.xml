@@ -1,8 +1,5 @@
 <project name="target.package.flex">
 
-  <property file="${buildsupport.dir}/base/base-build.properties"/>
-  <import file="${buildsupport.dir}/base/base-macros.xml"/>
-
   <target name="package-flex">
     <mkdir dir="${build.dir.output.package}"/>
     <copy toDir="${build.dir.output.package}">

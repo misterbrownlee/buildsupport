@@ -1,7 +1,4 @@
 <project name="target.build.air">
-  
-  <property file="${buildsupport.dir}/base/base-build.properties"/>
-  <import file="${buildsupport.dir}/base/base-macros.xml"/>
 
   <target name="build-air">
     <copy-config/>

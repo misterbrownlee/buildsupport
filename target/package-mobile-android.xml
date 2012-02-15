@@ -1,9 +1,5 @@
 <project name="target.package.mobile.android">
   
-  <property file="${buildsupport.dir}/base/base-build.properties"/>
-  <import file="${buildsupport.dir}/base/base-macros.xml"/>
-  
-  
   <target name="package-mobile-android">
     <generate-app-descriptor/>
     <stage-package-contents/>

@@ -1,15 +1,18 @@
-<project name="target.package.mobile.ios">
-  
-  <property file="${buildsupport.dir}/base/base-build.properties"/>
-  <import file="${buildsupport.dir}/base/base-macros.xml"/>
-  
+<project name="target.package.mobile.ios"> 
   
   <target name="package-mobile-ios">
     <generate-app-descriptor/>
-    <stage-package-contents/>
-    <package-adt package-input="${app.file.output}"
-      target="apk"
-      package-output-file="${app.package.file.android}"/>
+    <echo message="package-mobile-ios :: packaaging target is: ${package.target.ipa.type}"/>
+    <fail unless="package.target.ipa.type"
+      message="iOS packaging requires you set package.target.ipa.type in your build.properties"/>
+    
+    <!--  package-input="${app.binary.name}" -->
+    
+    <package-adt 
+      package-input="${app.file.output}"
+      target="${package.target.ipa.type}"
+      provisioning-profile="${provisioning.profile}"
+      package-output-file="${app.package.file.ios}"/>
   </target>
   
 </project>

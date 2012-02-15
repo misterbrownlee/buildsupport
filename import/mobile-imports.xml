@@ -1,0 +1,13 @@
+<project name="mobile-imports">
+
+  <import file="${buildsupport.dir}/import/base-imports.xml"/>
+  
+  <import file="${buildsupport.dir}/target/clean-build.xml"/>
+  <import file="${buildsupport.dir}/target/clean-tests.xml"/>  
+  <import file="${buildsupport.dir}/target/compile-swc-mobile.xml"/>
+  <import file="${buildsupport.dir}/target/build-mobile.xml"/>
+  <import file="${buildsupport.dir}/target/test-air.xml"/>
+  <import file="${buildsupport.dir}/target/package-mobile-android.xml"/>
+  <import file="${buildsupport.dir}/target/package-mobile-ios.xml"/>
+  
+</project>

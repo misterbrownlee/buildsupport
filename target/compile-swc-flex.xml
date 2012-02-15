@@ -1,8 +1,4 @@
 <project name="target.compile.swc.flex">
-  
-  <property file="${buildsupport.dir}/base/base-build.properties"/>
-  <import file="${buildsupport.dir}/base/base-macros.xml"/>
-
 
   <target name="compile-swc-flex">
     <copy-config config-name="${compile.config.name}"/>
