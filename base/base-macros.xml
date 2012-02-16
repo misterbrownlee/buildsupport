@@ -171,7 +171,7 @@
     <!-- cleanup-run-flexunit -->
     <macrodef name="cleanup-run-flexunit" description="clean up for run-flexunit">
       <sequential>
-        <delete verbose="${delete.verbose}">
+        <delete verbose="${delete.verbose}" failonerror="false">
           <fileset dir="${project.dir}">
             <include name="TestRunner**.*" />
             <include name="flexUnitDescriptor.xml" />
@@ -184,7 +184,7 @@
   <!-- cleanup-flexunit-reports -->
   <macrodef name="cleanup-flexunit-reports">
     <sequential>
-      <delete includeemptydirs="true" verbose="${delete.verbose}">
+      <delete includeemptydirs="true" verbose="${delete.verbose}" failonerror="false">
         <fileset dir="${build.dir.output.report}">
           <include name="**/*" />
         </fileset>
@@ -196,7 +196,7 @@
   <!-- cleanup-generated-output -->
   <macrodef name="cleanup-generated-output">
     <sequential>
-      <delete includeemptydirs="true" verbose="${delete.verbose}">
+      <delete includeemptydirs="true" verbose="${delete.verbose}" failonerror="false">
         <fileset dir="${build.dir.output}">
           <include name="**/*" />
         </fileset>
