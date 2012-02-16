@@ -2,8 +2,11 @@
   
   <target name="package-air">
     <generate-app-descriptor/>
-    <stage-package-contents/>
-    <package-adt package-input="${app.binary.output}"/>
+    <set-signing-options target="air"/>
+    <set-adt-arguments
+      target="air"
+      output-file-name="${app.package.filename}${app.package.extension.air}"/>  
+    <package-adt/>
   </target>
   
 </project>

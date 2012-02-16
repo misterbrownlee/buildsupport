@@ -4,7 +4,7 @@
     <copy-config/>
     <compile-mxmlc 
       main-file="${app.file.input}" 
-      output-file="${app.binary.output}" 
+      output-file="${app.file.output}" 
       compiler-config="${flex.dir.home}/frameworks/air-config.xml" 
       compiler-args="${build.dir.output}/generated-compile-config.xml" 
       flex-dir-home="${flex.dir.home}"/>

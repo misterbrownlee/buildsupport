@@ -2,10 +2,11 @@
   
   <target name="package-mobile-android">
     <generate-app-descriptor/>
-    <stage-package-contents/>
-    <package-adt package-input="${app.file.output}"
+    <set-signing-options target="apk"/>
+    <set-adt-arguments
       target="apk"
-      package-output-file="${app.package.file.android}"/>
+      output-file-name="${app.package.filename}${app.package.extension.android}"/>  
+    <package-adt/>
   </target>
   
 </project>

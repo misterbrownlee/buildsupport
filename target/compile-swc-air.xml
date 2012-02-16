@@ -1,7 +1,7 @@
 <project name="target.compile.swc.air">
 
   <target name="compile-swc-air">
-    <copy-config config-name="${compile.config.name}"/>
+    <copy-config/>
     <compc-compile flex-dir-home="${flex.dir.home}" 
       src-path="${lib.dir.input}" 
       output-file="${lib.file.output}" 

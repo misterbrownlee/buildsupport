@@ -22,14 +22,21 @@
   </condition>
 
   <macrodef name="copy-config">
-    <attribute name="config-name" default="${compile.config.name}"/>
-    <attribute name="config-path" default="${config.compiler.additional}"/>
     <attribute name="copy-path" default="${build.dir.output}"/>
     <sequential>
-      <var name="resolved.file.name" value="@{config-name}-compile-config.xml"/>
-      <var name="target.config" value="@{config-path}/${resolved.file.name}"/>
+      <var name="file.to.copy" value="${config.compiler.additional.default}"/>
+      <if>
+        <isset property="config.compiler.additional"/>
+      <then>
+        <var name="file.to.copy" value="${config.compiler.additional}"/>  
+      </then>
+      <else>
+        <echo message="copy-config :: you can override the default config by setting config.compiler.additional in your project.properties"/>
+      </else>
+     </if>
+      <echo message="copy-config :: attemting to copy and substitute vars in config ${file.to.copy}"/>
       <var name="config.copy" value="@{copy-path}/generated-compile-config.xml"/>
-      <copy file="${target.config}" tofile="${config.copy}" overwrite="true" verbose="true"/>
+      <copy file="${file.to.copy}" tofile="${config.copy}" overwrite="true" verbose="true"/>
       <replace file="${config.copy}" token="[buildsupport]" value="${buildsupport.dir}"/>
       <replace file="${config.copy}" token="[project-dir]" value="${project.dir}"/>
       <replace file="${config.copy}" token="[flex-home]" value="${flex.dir.home}"/>
@@ -109,9 +116,15 @@
       <!-- WARNING: flexunit requires the flex home path to not have any spaces -->
       <var name="FLEX_HOME" value="@{flex-dir-home}/"/>
       <mkdir dir="@{report-dir}"/>
-      <!-- TODO:  FlexUnit working directory is hardcoded in source.  need fix then re-add workingDir="@{working-dir}/" -->
-      <flexunit player="@{player}" toDir="@{to-dir}/" haltonfailure="false" verbose="false" localTrusted="true" headless="false" debug="true">
-        <!-- DONE: Update FlexUnit source to use compiler config and replace with below.  Then remove the source and library dir references.  -->
+      
+      <flexunit 
+        player="@{player}" 
+        toDir="@{to-dir}/" 
+        haltonfailure="false" 
+        verbose="false" 
+        localTrusted="true" 
+        headless="false" 
+        debug="true">
         <load-config filename="@{additional-compiler-config}"/>
         <source dir="@{source-dir}"/>
         <testSource dir="@{test-dir-source}">
@@ -129,10 +142,16 @@
 
 
   <macrodef name="build-run-flexunit">
+    <attribute name="flexunit-config-additional" 
+      default="${config.flexunit.additional.default}"/>
     <attribute name="player" default="flash"/>
     <sequential>
-      <var name="config.copy" value="${build.dir.output.unit}/generated-flexunit-config.xml"/>
-      <copy file="${unit.config.compiler.additional}" tofile="${config.copy}" overwrite="true"/>
+      <var name="config.copy" 
+        value="${build.dir.output.unit}/generated-flexunit-config.xml"/>
+      <copy 
+        file="@{flexunit-config-additional}" 
+        tofile="${config.copy}" 
+        overwrite="true"/>
       <replace file="${config.copy}" token="[buildsupport]" value="${buildsupport.dir}"/>
       <replace file="${config.copy}" token="[project-dir]" value="${project.dir}"/>
       <run-flexunit
@@ -228,7 +247,13 @@
     <attribute name="label-view" />
     <attribute name="build-desc" default="@{build-label}" />
     <sequential>
-      <p4label port="${p4.port}" user="${p4.user}" client="${p4.workspace}" view="@{label-view}" name="@{build-label}" desc="@{build-desc}" />
+      <p4label 
+      port="${p4.port}" 
+      user="${p4.user}" 
+      client="${p4.workspace}" 
+      view="@{label-view}" 
+      name="@{build-label}" 
+      desc="@{build-desc}" />
     </sequential>
   </macrodef -->
 
@@ -281,33 +306,76 @@
       </exec>
     </sequential>
   </macrodef>
-
-
-  <!-- package using adt -->
+  
+  
   <macrodef name="package-adt">
     <attribute name="flex-dir-home" default="${flex.dir.home}"/>
-    <attribute name="target" 
-      default="air"/>
+    <attribute name="package-output-dir" default="${build.dir.output.package}"/>
+    <sequential>
+      <fail unless="adt-arguments" message="package-adt :: call set-adt-arguments macro before trying adt-package"/>
+      <echo message="package-adt :: calling adt in dir ${build.dir.output.binary}"/>
+      <mkdir dir="@{package-output-dir}"/>
+      <java
+        jar="@{flex-dir-home}/lib/adt.jar"
+        dir="${build.dir.output.binary}"
+        fork="true" failonerror="true">
+        <arg line="${adt-arguments}"/>
+      </java>
+      <echo message="package-adt :: finished"/>  
+    </sequential>
+  </macrodef>
+  
+  
+  <macrodef name="set-adt-arguments">
+    <attribute name="target"/>
+    <attribute name="package-input" default="${app.file.output}"/>
+    <attribute name="package-output-dir" 
+      default="${build.dir.output.package}"/>
+    <attribute name="output-file-name"/>
+    <attribute name="app-descriptor" 
+      default="${build.dir.output.binary}/${project.name}-app.xml" />
+    <attribute name="additional-input" 
+      default="${app.assets.dir}"/>
+    <sequential>
+      <fail unless="signing-options" message="set-adt-arguments :: call set-signing-options macro before trying set-adt-arguments"/>
+      <var name="adt-arguments" value="-package"/>
+      <if>
+        <equals arg1="@{target}" arg2="air"/>
+      <then>  
+        <var name="adt-arguments" value="${adt-arguments} ${signing-options}"/>
+        <var name="adt-arguments" value="${adt-arguments} -target air"/>
+      </then>
+      <else>
+        <var name="adt-arguments" value="${adt-arguments} -target @{target}"/>
+        <var name="adt-arguments" value="${adt-arguments} ${signing-options}"/>
+      </else>
+      </if>  
+      <var name="adt-arguments" value="${adt-arguments} @{package-output-dir}/@{output-file-name}"/>
+      <var name="adt-arguments" value="${adt-arguments} @{app-descriptor}"/>
+      <var name="adt-arguments" value="${adt-arguments} @{package-input}"/>
+      <var name="adt-arguments" value="${adt-arguments} -C"/>
+      <var name="adt-arguments" value="${adt-arguments} ${build.src.dir}"/>
+      <var name="adt-arguments" value="${adt-arguments} @{additional-input}"/>
+      <!-- could override additional input with more -C args if needed -->
+      <echo message="set-adt-arguments :: args[${adt-arguments}]"/>  
+    </sequential>
+  </macrodef>
+  
+  
+  <macrodef name="set-signing-options">
+    <attribute name="target"/>
     <attribute name="storetype" 
       default="${keystore.type}"/>
     <attribute name="keystore" 
       default="${keystore.path}/${keystore.name}"/>
     <attribute name="storepass" 
       default="${keystore.password}"/>
-    <attribute name="package-output-dir" 
-      default="${build.dir.output.package}"/>
-    <attribute name="provisioning-profile" default=""/>
-    <attribute name="package-output-file" 
-      default="${app.file.output}"/>
-    <attribute name="app-descriptor" 
-      default="${build.dir.output.binary}/${project.name}-app.xml" />
-    <attribute name="package-input"/>
-    <attribute name="additional-input" 
-      default="${app.assets.dir}"/>
+    <!--attribute name="provisioning-profile" default=""/-->
     <sequential>
-      <mkdir dir="@{package-output-dir}"/>
-      <var name="provisioning-arg" value=""/>
-      <var name="provisioning-path" value=""/>
+      <echo message="signing-options :: setting args for use by adt"/>
+      <var name="signing-options" value="-storetype @{storetype}"/>
+      <var name="signing-options" value="${signing-options} -keystore @{keystore}"/>
+      <var name="signing-options" value="${signing-options} -storepass @{storepass}"/>
       <if>
          <or>
          <equals arg1="@{target}" arg2="ipa-test"/> 
@@ -316,51 +384,10 @@
          <equals arg1="@{target}" arg2="ipa-ad-hoc"/>
           </or> 
        <then>
-         <var name="provisioning-arg" value="-provisioning-profile"/> 
-         <var name="provisioning-path" value="@{provisioning-profile}" />
+         <fail unless="provisioning.profile" message="signing-options :: provisioning.profile required for ios packaging"/>
+         <var name="signing-options" value="${signing-options} -provisioning-profile ${provisioning.profile}"/> 
        </then>
      </if>
-      <echo message="package-adt :: calling adt in dir ${build.dir.output.binary}"/>
-      <echo message="package-adt :: args:"/>
-      <echo message="  -package"/>
-      <echo message="  -target @{target}"/>
-      <echo message="  -storetype @{storetype}"/>
-      <echo message="  -keystore @{keystore}"/>
-      <echo message="  -storepass @{storepass}"/>
-      <echo message="  ${provisioning-arg}"/>
-      <echo message="  ${provisioning-path}"/>
-      <echo message="  @{package-output-dir}/@{package-output-file} (output)"/>
-      <echo message="  @{app-descriptor} (descriptor)"/>
-      <echo message="  @{package-input} (input)"/>
-      <echo message="  -C"/>
-      <echo message="  ${build.src.dir}"/>
-      <echo message="  @{additional-input}"/>
-      <echo message="-----------------------------------" />
-      <echo message=""/>
-      <java
-        jar="@{flex-dir-home}/lib/adt.jar"
-        dir="${build.dir.output.binary}"
-        fork="true" failonerror="true">
-        <arg value="-package"/>
-        <arg value="-target"/>
-        <arg value="@{target}"/>
-        <arg value="-storetype"/>
-        <arg value="@{storetype}"/>
-        <arg value="-keystore"/>
-        <arg value="@{keystore}"/>
-        <arg value="-storepass"/>
-        <arg value="@{storepass}"/>
-        <arg value="${provisioning-arg}"/>
-        <arg value="${provisioning-path}"/>
-        <arg value="@{package-output-dir}/@{package-output-file}"/>
-        <arg value="@{app-descriptor}"/>
-        <arg value="@{package-input}"/>
-        <arg value="-C"/>
-        <arg value="${build.src.dir}"/>
-        <arg value="@{additional-input}"/>
-        <!-- could override additional input with more -C args if needed -->
-      </java>
-    <echo message="package-adt :: finished"/>
     </sequential>
   </macrodef>
 
@@ -372,6 +399,7 @@
     <attribute name="replace-token" default="${app.descriptor.token.default}"/>
     <attribute name="replace-content" default="${app.binary.name}"/>
     <sequential>
+      <echo message="generate-app-descriptor :: @{descriptor-tofile}"/>
       <copy file="@{descriptor-template}" tofile="@{descriptor-tofile}" overwrite="true"/>
       <replace file="@{descriptor-tofile}" token="@{replace-token}" value="@{replace-content}" />
     </sequential>

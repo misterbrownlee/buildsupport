@@ -5,14 +5,16 @@
     <echo message="package-mobile-ios :: packaaging target is: ${package.target.ipa.type}"/>
     <fail unless="package.target.ipa.type"
       message="iOS packaging requires you set package.target.ipa.type in your build.properties"/>
-    
-    <!--  package-input="${app.binary.name}" -->
-    
-    <package-adt 
+    <!--package-adt-mobile 
       package-input="${app.file.output}"
       target="${package.target.ipa.type}"
       provisioning-profile="${provisioning.profile}"
-      package-output-file="${app.package.file.ios}"/>
+      package-output-file="${app.package.file.ios}"/-->
+        <set-signing-options target="${package.target.ipa.type}"/>
+        <set-adt-arguments
+          target="${package.target.ipa.type}"
+          output-file-name="${app.package.filename}${app.package.extension.ios}"/>  
+        <package-adt/>
   </target>
   
 </project>
