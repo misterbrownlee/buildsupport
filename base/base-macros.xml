@@ -261,7 +261,7 @@
   <!-- macro compc compile: difficult to make compc flexible :( -->
   <macrodef name="compc-compile">
     <attribute name="locale" default="en_US"/>
-    <attribute name="flex-dir-home"/>
+    <attribute name="flex-dir-home" default="${flex.dir.home}"/>
     <attribute name="src-path"/>
     <attribute name="output-file"/>
     <attribute name="framework-config-name" default="flex"/>
