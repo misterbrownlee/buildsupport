@@ -273,7 +273,7 @@
           <compc locale="@{locale}"
             output="@{output-file}">
             <source-path path-element="@{src-path}"/>
-            <include-sources dir="@{src-path}" includes="*" />
+            <include-sources dir="@{src-path}" includes="${compc.src.includes}" />
             <load-config filename="@{compiler-config}"/>
             <load-config filename="@{compiler-args}"/>
           </compc>
