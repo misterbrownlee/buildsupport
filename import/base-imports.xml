@@ -2,5 +2,6 @@
   
   <property file="${buildsupport.dir}/base/base-build.properties"/>
   <import file="${buildsupport.dir}/base/base-macros.xml"/>
+  <import file="${buildsupport.dir}/target/help-list-targets.xml"/>
   
 </project>

@@ -1,0 +1,12 @@
+<project name="target.help.list.targets">
+
+<target name="help-list-targets">
+    <java classname="org.apache.tools.ant.Main">
+      <arg value="-projecthelp" />
+      <arg value="-buildfile" />
+      <arg value="${help.list.targets.file}" />
+    </java>
+    
+</target>
+
+</project>

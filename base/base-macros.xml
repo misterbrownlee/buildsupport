@@ -55,6 +55,7 @@
     <attribute name="compiler-args"/>
     <attribute name="debug" default="false" />
     <sequential>
+      <echo message="compile-mxmlc :: setting FLEX_HOME to @{flex-dir-home}"/>
       <var name="FLEX_HOME" value="@{flex-dir-home}" />
       <mxmlc
         file="@{main-file}"
@@ -83,6 +84,7 @@
     <attribute name="package-output-dir" default="${build.dir.output.package}"/>
     <attribute name="output-file-name" default="index.html" />
     <sequential>
+      <echo message="create-flex-html-wrapper :: setting FLEX_HOME to @{flex-dir-home}"/>
       <var name="FLEX_HOME" value="${flexSDK}" />
       <var name="player-version" value="10.1" />
       <html-wrapper
@@ -114,6 +116,7 @@
     <attribute name="report-dir" default="@{to-dir}/report"/>
     <sequential>
       <!-- WARNING: flexunit requires the flex home path to not have any spaces -->
+      <echo message="run-flexunit :: setting FLEX_HOME to @{flex-dir-home}"/>
       <var name="FLEX_HOME" value="@{flex-dir-home}/"/>
       <mkdir dir="@{report-dir}"/>
       
@@ -269,6 +272,7 @@
       default="@{flex-dir-home}/frameworks/@{framework-config-name}-config.xml"/>
     <attribute name="compiler-args"/>
       <sequential>
+          <echo message="compc-compile :: setting FLEX_HOME to @{flex-dir-home}"/>
           <var name="FLEX_HOME" value="@{flex-dir-home}"/>
           <compc locale="@{locale}"
             output="@{output-file}">
