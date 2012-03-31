@@ -390,22 +390,13 @@
     <sequential>
       <echo message="generate-app-descriptor :: @{descriptor-tofile}"/>
       <copy file="@{descriptor-template}" tofile="@{descriptor-tofile}" overwrite="true"/>
-      <echo message="generate-app-descriptor :: replacing @{token-binary} with @{replace-binary} (if possible)"/>
+      <echo message="generate-app-descriptor :: trying to replace @{token-binary} with @{replace-binary}"/>
       <replace file="@{descriptor-tofile}" token="@{token-binary}" value="@{replace-binary}" />
-      <echo message="generate-app-descriptor :: replacing @{token-version} with @{replace-version} (if possible)"/>
+      <echo message="generate-app-descriptor :: trying to replace @{token-version} with @{replace-version}"/>
       <replace file="@{descriptor-tofile}" token="@{token-version}" value="@{replace-version}"/>
     </sequential>
   </macrodef>
-  
-  
-  <macrodef name="increment-app-version">
-    <attribute name="replace-content" default="${app.version.number}"/>
-    <attribute name="replace-token" default="${app.version.token}"/>
-    <attribute name="descriptor-file" default="${build.dir.output.binary}/${project.name}-app.xml"/>
-    <sequential>
-      <replace file="@{descriptor-file}" token="@{replace-token}" value="@{replace-content}" />
-    </sequential>
-  </macrodef>
+
    
    
   <!-- OMG - perforce -->
