@@ -18,10 +18,9 @@ https://github.com/tehfoo/BuildsupportFlexExample
 https://github.com/tehfoo/BuildsupportAIRExample
 
 TODO:
-- example simple air project with packaging
-- example simple mobile project with packaging
 - example project with library and dependent flex app
-
+- scm magic for saving updated descriptor
+- RSL stuff
 
 Assumption: Most projects follow a simple pattern of a base directory, with
 source in an src folder, libraries in a libs folder, and no drama. If that's
@@ -30,8 +29,7 @@ be all set. If your structure is different (more complex), you will probably
 need to create more specific ant targets or provided custom compiler
 configuration to make this all work.
 
-
-Notes: In build.properties, you can add some details specific to the project
+In build.properties, you can add some details specific to the project
 configuration. These are items that typically differ from one computer to
 another, and will mainly be used by any custom targets you make. Important:
 The declaration of the path to build support must be defined before importing
@@ -75,7 +73,17 @@ for the compiler to consume. Here's how:
 Note you're only changing the path to, and 'yourname' part of, the config
 file. The rest of the file name should remain the same. You can use
 -dump-config from a working compile (like in FB) to see all the options and
-configuration for a working IDE project.
+configuration for a working IDE project. Swap out absolute paths for 
+[project-dir] and [flex-home] for better portability.
+
+Version Number Magic:
+You can put [build-number] anywhere in your AIR app descriptor (like in the
+<versionNumber> tag), and then set a build.number property, and this will be
+replaced in the package version of the descriptor.  For bonus points, don't set 
+the build.number property anywhere, and instead use the increment-version.xml 
+target to automatically increment part of your version number with each ant 
+build. Triple bonus points if you use Jenkins and set the property 
+'build.number=${BUILD_NUMBER}' in your Invoke Ant task :)
 
 More on Extending 
 - base contains properties, tasks, and macros 
