@@ -1,0 +1,9 @@
+<project name="increment-version">
+  
+  <target name="increment-version">
+    <buildnumber file="${buildnumber.file.path}/${buildnumber.file.name}" />
+    <echo message="set build.number property to ${build.number}"/>
+    <echo message="${buildnumber.file.path}/${buildnumber.file.name} read and incremented automagically"/>
+  </target>
+  
+</project>
