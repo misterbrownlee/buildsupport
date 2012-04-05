@@ -340,6 +340,30 @@
       <var name="adt-arguments" value="${adt-arguments} @{package-output-dir}/@{output-file-name}"/>
       <var name="adt-arguments" value="${adt-arguments} @{app-descriptor}"/>
       <var name="adt-arguments" value="${adt-arguments} @{package-input}"/>
+      <if>
+        <isset property="native.extensions.dir"/>
+      <then>
+        <var name="adt-arguments" value="${adt-arguments} -extdir ${native.extensions.dir}"/>
+      </then>
+      </if>
+      <if>
+        <and>
+        <equals arg1="${isIpa}" arg2="true"/>
+        <isset property="ios.sdk.path"/>
+        </and>
+        <then>
+          <var name="adt-arguments" value="${adt-arguments} -platformsdk ${ios.sdk.path}"/>
+        </then>
+      </if>
+      <if>
+        <and>
+        <equals arg1="${isIpa}" arg2="false"/>
+        <isset property="android.sdk.path"/>
+        </and>
+        <then>
+          <var name="adt-arguments" value="${adt-arguments} -platformsdk ${ios.sdk.path}"/>
+        </then>
+      </if>
       <var name="adt-arguments" value="${adt-arguments} -C"/>
       <var name="adt-arguments" value="${adt-arguments} ${build.src.dir}"/>
       <var name="adt-arguments" value="${adt-arguments} @{additional-input}"/>
@@ -372,8 +396,12 @@
           </or> 
        <then>
          <fail unless="provisioning.profile" message="signing-options :: provisioning.profile required for ios packaging"/>
-         <var name="signing-options" value="${signing-options} -provisioning-profile ${provisioning.profile}"/> 
+         <var name="signing-options" value="${signing-options} -provisioning-profile ${provisioning.profile}"/>
+         <property name="isIpa" value="true"/> 
        </then>
+       <else>
+         <property name="isIpa" value="false"/>
+       </else>
      </if>
     </sequential>
   </macrodef>
