@@ -12,9 +12,8 @@
   </target>
 
 
-  <!-- clean prior build and packaging -->
+  <!-- clean packaging artifacts-->
   <target name="clean-for-package">
-    <cleanup-build/>
     <cleanup-package/>
   </target>
   
