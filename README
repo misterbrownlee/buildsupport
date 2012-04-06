@@ -1,5 +1,20 @@
 Build Support README
 
+Summary: 
+This is a library of Ant targets and macros that is useful for
+building, testing, and packaging Adobe ActionScript, Flex, AIR, and 
+AIR Mobile projects.  
+
+It includes support for:
+ - Custom compiler configuration,
+ - FlexUnit testing via Flex and AIR
+ - Android and iOS packaging
+ - Inclusion of compiled Application Native Extension libraries
+ - Automatic version number incrementation
+ - Lots of flexibility via over-rideable properties
+ - MIT License for extra free goodness
+ - Other handy bits
+ 
 Usage:
 1) clone buildsupport into to your project root
 1a) to ease use on multiple projects, clone to a tools directory, 
@@ -18,6 +33,7 @@ https://github.com/tehfoo/BuildsupportFlexExample
 https://github.com/tehfoo/BuildsupportAIRExample
 
 TODO:
+- compile ANE libs via ADT
 - example project with library and dependent flex app
 - scm magic for saving updated descriptor
 - RSL stuff
