@@ -1,9 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <flex-config>
    <compiler>
-        <!-- local libraries -->
+        <external-library-path append="true">
+           <!--path-element>[flex-home]/frameworks/libs/air/airglobal.swc</path-element>
+           <path-element>[flex-home]/frameworks/libs/authoringsupport.swc</path-element>
+           <path-element>[flex-home]/frameworks/libs/charts.swc</path-element>
+           <path-element>[flex-home]/frameworks/libs/flash-integration.swc</path-element>
+           <path-element>[flex-home]/frameworks/libs/framework.swc</path-element>
+           <path-element>[flex-home]/frameworks/libs/rpc.swc</path-element>
+           <path-element>[flex-home]/frameworks/libs/spark.swc</path-element>
+           <path-element>[flex-home]/frameworks/libs/textLayout.swc</path-element>
+           <path-element>[flex-home]/frameworks/libs/mobile/mobilecomponents.swc</path-element>
+           <path-element>[flex-home]/frameworks/libs/air/servicemonitor.swc</path-element>
+           <path-element>[flex-home]/frameworks/locale/{locale}</path-element-->
+        </external-library-path>  
         <library-path append="true">
             <path-element>[project-dir]/libs</path-element>
         </library-path>
+        <namespaces>
+           <namespace>
+              <uri>http://ns.adobe.com/mxml/2009</uri>
+              <manifest>[flex-home]/frameworks/mxml-2009-manifest.xml</manifest>
+           </namespace>
+           <namespace>
+              <uri>library://ns.adobe.com/flex/spark</uri>
+              <manifest>[flex-home]/frameworks/spark-manifest.xml</manifest>
+           </namespace>
+        </namespaces>
   </compiler>
+  <remove-unused-rsls>true</remove-unused-rsls>
 </flex-config>

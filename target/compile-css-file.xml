@@ -1,0 +1,8 @@
+<project name="target.compile.css.file">
+
+  <target name="compile-css-file">
+    <copy-config input-file="${config.compiler.css}"/>
+    <compile-css-file />
+  </target>
+  
+</project>

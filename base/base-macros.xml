@@ -5,7 +5,7 @@
   
   <property name="delete.verbose" value="true"/>
 
-  <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpath="${buildsupport.dir}/lib/ant-contrib-1.0b3.jar" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${buildsupport.dir}/lib/ant-contrib-1.0b3.jar" />
 
   <taskdef resource="flexTasks.tasks" classpath="${flex.dir.home}/ant/lib/flexTasks.jar" />
 
@@ -23,20 +23,12 @@
 
   <macrodef name="copy-config">
     <attribute name="copy-path" default="${build.dir.output}"/>
+    <attribute name="input-file" default="${config.compiler.additional}"/>
     <sequential>
-      <var name="file.to.copy" value="${config.compiler.additional.default}"/>
-      <if>
-        <isset property="config.compiler.additional"/>
-      <then>
-        <var name="file.to.copy" value="${config.compiler.additional}"/>  
-      </then>
-      <else>
-        <echo message="copy-config :: you can override the default config by setting config.compiler.additional in your project.properties"/>
-      </else>
-     </if>
-      <echo message="copy-config :: attemting to copy and substitute vars in config ${file.to.copy}"/>
+      <!--var name="file.to.copy" value="${config.compiler.additional}"/-->
+      <echo message="copy-config :: attempting to copy and substitute vars in @{input-file}"/>
       <var name="config.copy" value="@{copy-path}/generated-compile-config.xml"/>
-      <copy file="${file.to.copy}" tofile="${config.copy}" overwrite="true" verbose="true"/>
+      <copy file="@{input-file}" tofile="${config.copy}" overwrite="true" verbose="true"/>
       <replace file="${config.copy}" token="[buildsupport]" value="${buildsupport.dir}"/>
       <replace file="${config.copy}" token="[project-dir]" value="${project.dir}"/>
       <replace file="${config.copy}" token="[flex-home]" value="${flex.dir.home}"/>
@@ -46,17 +38,17 @@
 
   <!-- compile using mxmlc -->
   <macrodef name="compile-mxmlc" description="MXMLC MACRO">
-    <attribute name="main-file" />
-    <attribute name="output-file" />
+    <attribute name="main-file"/>
+    <attribute name="output-file"/>
     <attribute name="flex-dir-home" />
     <attribute name="config-name" default="flex"/>
     <attribute name="compiler-config"
-      default="@{flex-dir-home}/frameworks/flex-config.xml" />
+      default="@{flex-dir-home}/frameworks/@{config-name}-config.xml" />
     <attribute name="compiler-args"/>
-    <attribute name="debug" default="false" />
+    <attribute name="debug" default="false"/>
     <sequential>
       <echo message="compile-mxmlc :: setting FLEX_HOME to @{flex-dir-home}"/>
-      <var name="FLEX_HOME" value="@{flex-dir-home}" />
+      <var name="FLEX_HOME" value="@{flex-dir-home}"/>
       <mxmlc
         file="@{main-file}"
         output="@{output-file}"
@@ -68,13 +60,64 @@
         <!--license
           product="${flashbuilderVersion}"
           serial-number="${flashbuilderSerial}" /-->
-        <load-config filename="@{compiler-config}" />
-        <load-config filename="@{compiler-args}" />
+        <load-config filename="@{compiler-config}"/>
+        <load-config filename="@{compiler-args}"/>
       </mxmlc>
       <echo message="compile-mxmlc :: finished"/>
     </sequential>
   </macrodef>
-
+  
+  
+  <!-- mxmlc call for css to swf compile -->
+  <macrodef name="compile-css-file" >
+    <!-- Compile against config -->
+    <attribute name="input-file-path" default="${css.files.dir}"/>
+    <attribute name="input-file-name" default="${css.file.name}"/>
+    <sequential>
+    <!--echo message="compile-css-file :: compiling @{input-file-path}/@{input-file-name}"/-->
+    
+    <var name="output-file-name" value="ERROR"/>
+    <propertyregex 
+      property="output-file-name" input="@{input-file-name}"  
+      regexp="([.])*\.css$" 
+      replace="\1.swf"
+      override="true"/>
+                
+    <echo message="compile-css-file :: output to ${build.dir.output.css}/${output-file-name}"/>
+    
+    <compile-mxmlc 
+      main-file="@{input-file-path}/@{input-file-name}"
+      output-file="${build.dir.output.css}/${output-file-name}"
+      flex-dir-home="${flex.dir.home}"
+      config-name="${css.sdk.config}"
+      compiler-args="${build.dir.output}/generated-compile-config.xml"/>
+      <!--compiler-args="${config.compiler.css}"/ -->
+    
+    <echo message="compile-css-file :: finished compiling ${output-file-name} to ${build.dir.output.css}"/>
+    </sequential>
+  </macrodef>
+  
+  
+  <macrodef name="compile-css-directory">
+    <sequential>
+       <echo message="compile-css-directory :: css directory is: ${css.files.dir}"/>
+       <echo message="compile-css-directory :: starting loop..."/>
+       <fileset id="css-files" dir="${css.files.dir}" includes="*.css"/>
+        <pathconvert property="file-list" refid="css-files" targetos="unix">
+           <mapper><flattenmapper/></mapper>
+        </pathconvert>
+        <!-- loop the file names -->
+        <for param="css-file" list="${file-list}" delimiter=":">  
+          <sequential>
+            <echo message="compile-css-directory :: calling compile-css for ${css.files.dir}/@{css-file}"/>
+            <compile-css-file input-file-name="@{css-file}"/>
+            <echo message="compile-css-directory :: done with @{css-file}"/>
+          </sequential>
+        </for>
+        <echo message="compile-css-directory :: loop finished"/>
+    </sequential>
+  </macrodef>
+  
 
   <!-- marco to create html wrapper for web apps -->
   <macrodef name="create-flex-html-wrapper">
@@ -146,7 +189,7 @@
 
   <macrodef name="build-run-flexunit">
     <attribute name="flexunit-config-additional" 
-      default="${config.flexunit.additional.default}"/>
+      default="${config.flexunit.additional}"/>
     <attribute name="player" default="flash"/>
     <sequential>
       <var name="config.copy" 
