@@ -436,6 +436,8 @@
          <equals arg1="@{target}" arg2="ipa-debug"/>
          <equals arg1="@{target}" arg2="ipa-app-store"/>
          <equals arg1="@{target}" arg2="ipa-ad-hoc"/>
+         <equals arg1="@{target}" arg2="ipa-debug-interpreter"/>
+         <equals arg1="@{target}" arg2="ipa-test-interpreter"/>
           </or> 
        <then>
          <fail unless="provisioning.profile" message="signing-options :: provisioning.profile required for ios packaging"/>
