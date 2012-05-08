@@ -2,9 +2,9 @@
   
   <target name="package-mobile-android">
     <generate-app-descriptor/>
-    <set-signing-options target="apk"/>
+    <set-signing-options target="${package.apk.type}"/>
     <set-adt-arguments
-      target="apk"
+      target="${package.apk.type}"
       output-file-name="${app.package.filename}${app.package.extension.android}"/>  
     <package-adt/>
   </target>
