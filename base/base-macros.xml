@@ -389,10 +389,9 @@
         <var name="adt-arguments" value="${adt-arguments} -extdir ${native.extensions.dir}"/>
       </then>
       </if>
-      <echo message="set-adt-arguments :: isIpa = ${isIpa}"/>
       <if>
         <and>
-        <equals arg1="${isIpa}" arg2="true"/>
+        <equals arg1="${package.type}" arg2="IOS"/>
         <isset property="ios.sdk.path"/>
         </and>
         <then>
@@ -401,7 +400,7 @@
       </if>
       <if>
         <and>
-        <equals arg1="${isIpa}" arg2="false"/>
+        <equals arg1="${package.type}" arg2="ANDROID"/>
         <isset property="android.sdk.path"/>
         </and>
         <then>
@@ -413,6 +412,32 @@
       <var name="adt-arguments" value="${adt-arguments} @{additional-input}"/>
       <!-- could override additional input with more -C args if needed -->
       <echo message="set-adt-arguments :: args[${adt-arguments}]"/>  
+    </sequential>
+  </macrodef>
+  
+  <macrodef name="set-package-type">
+    <attribute name="target"/>
+    <sequential>
+      <echo message="set-package-type :: target: @{target}"/>
+      <if>
+         <or>
+         <equals arg1="@{target}" arg2="ipa-test"/> 
+         <equals arg1="@{target}" arg2="ipa-debug"/>
+         <equals arg1="@{target}" arg2="ipa-app-store"/>
+         <equals arg1="@{target}" arg2="ipa-ad-hoc"/>
+         <equals arg1="@{target}" arg2="ipa-debug-interpreter"/>
+         <equals arg1="@{target}" arg2="ipa-test-interpreter"/>
+          </or> 
+       <then>
+         <property name="package.type" value="IOS"/>
+         <property name="is.ipa" value="true"/> 
+       </then>
+       <else>
+         <property name="package.type" value="ANDROID"/>
+         <property name="is.ipa" value="false"/>
+       </else>
+     </if>
+     <echo message="set-package-type :: package.type = ${package.type}"/>
     </sequential>
   </macrodef>
   
@@ -428,27 +453,19 @@
     <!--attribute name="provisioning-profile" default=""/-->
     <sequential>
       <echo message="signing-options :: setting args for use by adt"/>
+      <set-package-type target="@{target}"/>
       <var name="signing-options" value="-storetype @{storetype}"/>
       <var name="signing-options" value="${signing-options} -keystore @{keystore}"/>
       <var name="signing-options" value="${signing-options} -storepass @{storepass}"/>
       <if>
-         <or>
-         <equals arg1="@{target}" arg2="ipa-test"/> 
-         <equals arg1="@{target}" arg2="ipa-debug"/>
-         <equals arg1="@{target}" arg2="ipa-app-store"/>
-         <equals arg1="@{target}" arg2="ipa-ad-hoc"/>
-         <equals arg1="@{target}" arg2="ipa-debug-interpreter"/>
-         <equals arg1="@{target}" arg2="ipa-test-interpreter"/>
-          </or> 
+         <equals arg1="${package.type}" arg2="IOS"/>
        <then>
+         <echo message="signing-options :: setting args specific to ${package.type} package type"/>
          <fail unless="provisioning.profile" message="signing-options :: provisioning.profile required for ios packaging"/>
          <var name="signing-options" value="${signing-options} -provisioning-profile ${provisioning.profile}"/>
-         <property name="isIpa" value="true"/> 
        </then>
-       <else>
-         <property name="isIpa" value="false"/>
-       </else>
      </if>
+     
     </sequential>
   </macrodef>
 
