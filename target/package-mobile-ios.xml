@@ -2,7 +2,7 @@
   
   <target name="package-mobile-ios">
     <generate-app-descriptor/>
-    <echo message="package-mobile-ios :: packaaging target is: ${package.ipa.type}"/>
+    <echo message="package-mobile-ios :: packaging target is: ${package.ipa.type}"/>
     <fail unless="package.ipa.type"
       message="iOS packaging requires you set package.target.ipa.type in your build.properties"/>
         <set-signing-options target="${package.ipa.type}"
