@@ -426,7 +426,7 @@
           <isset property="native.extension.includes.android"/>
         <then>
           <echo message="set-adt-arguments :: setting Android -extdir entries"/>
-          <var name="adt-arguments" value="${adt-arguments} ${native.extension.includes.ios}"/>
+          <var name="adt-arguments" value="${adt-arguments} ${native.extension.includes.android}"/>
         </then>
         </if>
         <!-- end Android specific packaging -->  
