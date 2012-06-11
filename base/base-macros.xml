@@ -384,34 +384,59 @@
       <var name="adt-arguments" value="${adt-arguments} @{app-descriptor}"/>
       <var name="adt-arguments" value="${adt-arguments} @{package-input}"/>
       <if>
-        <isset property="native.extensions.dir"/>
+        <isset property="native.extension.includes.universal"/>
       <then>
-        <var name="adt-arguments" value="${adt-arguments} -extdir ${native.extensions.dir}"/>
+        <echo message="set-adt-arguments :: setting universal -extdir entries"/>
+        <var name="adt-arguments" value="${adt-arguments} ${native.extension.includes.universal}"/>
       </then>
       </if>
+      <!-- start iOS specific additions -->
       <if>
-        <and>
         <equals arg1="${package.type}" arg2="IOS"/>
-        <isset property="ios.sdk.path"/>
-        </and>
+      <then>
+        <!-- include ios specific -extdir entries -->
+        <if>
+          <isset property="native.extension.includes.ios"/>
+        <then>
+          <echo message="set-adt-arguments :: setting iOS -extdir entries"/>
+          <var name="adt-arguments" value="${adt-arguments} ${native.extension.includes.ios}"/>
+        </then>
+        </if>
+        <!-- set ios specific native path -->
+        <if>
+          <isset property="ios.sdk.path"/>
         <then>
           <var name="adt-arguments" value="${adt-arguments} -platformsdk ${ios.sdk.path}"/>
         </then>
-      </if>
+        </if>
+        <!-- end of iOS specific packaging -->  
+      </then>    
+      </if>    
       <if>
-        <and>
         <equals arg1="${package.type}" arg2="ANDROID"/>
-        <isset property="android.sdk.path"/>
-        </and>
+      <then>
+        <if>  
+          <isset property="android.sdk.path"/>
         <then>
           <var name="adt-arguments" value="${adt-arguments} -platformsdk ${android.sdk.path}"/>
         </then>
-      </if>
+        </if>
+        <!-- set Android specific -extdir entries -->
+        <if>
+          <isset property="native.extension.includes.android"/>
+        <then>
+          <echo message="set-adt-arguments :: setting Android -extdir entries"/>
+          <var name="adt-arguments" value="${adt-arguments} ${native.extension.includes.ios}"/>
+        </then>
+        </if>
+        <!-- end Android specific packaging -->  
+      </then>
+      </if>    
       <var name="adt-arguments" value="${adt-arguments} -C"/>
       <var name="adt-arguments" value="${adt-arguments} ${build.src.dir}"/>
       <var name="adt-arguments" value="${adt-arguments} @{additional-input}"/>
       <!-- could override additional input with more -C args if needed -->
-      <echo message="set-adt-arguments :: args[${adt-arguments}]"/>  
+      <echo message="set-adt-arguments :: complete output: args[${adt-arguments}]"/>  
     </sequential>
   </macrodef>
   
@@ -432,6 +457,13 @@
          <property name="package.type" value="IOS"/>
          <property name="is.ipa" value="true"/> 
        </then>
+       <elseif>
+           <equals arg1="@{target}" arg2="air"/>
+         <then>
+           <property name="package.type" value="DESKTOP"/>
+           <property name="is.ipa" value="false"/>
+         </then>
+       </elseif>   
        <else>
          <property name="package.type" value="ANDROID"/>
          <property name="is.ipa" value="false"/>
@@ -444,13 +476,9 @@
   
   <macrodef name="set-signing-options">
     <attribute name="target"/>
-    <attribute name="storetype" 
-      default="${keystore.type}"/>
-    <attribute name="keystore" 
-      default="${keystore.path}/${keystore.name}"/>
-    <attribute name="storepass" 
-      default="${keystore.password}"/>
-    <!--attribute name="provisioning-profile" default=""/-->
+    <attribute name="storetype"/>
+    <attribute name="keystore"/>
+    <attribute name="storepass"/>
     <sequential>
       <echo message="signing-options :: setting args for use by adt"/>
       <set-package-type target="@{target}"/>

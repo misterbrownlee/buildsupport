@@ -2,7 +2,10 @@
   
   <target name="package-air">
     <generate-app-descriptor/>
-    <set-signing-options target="air"/>
+    <set-signing-options target="air"
+      storetype="${keystore.type.desktop}"
+      keystore="${keystore.path.desktop}/${keystore.name.desktop}"
+      storepass="${keystore.password.desktop}"/>
     <set-adt-arguments
       target="air"
       output-file-name="${app.package.filename}${app.package.extension.air}"/>  

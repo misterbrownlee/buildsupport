@@ -5,7 +5,10 @@
     <echo message="package-mobile-ios :: packaaging target is: ${package.ipa.type}"/>
     <fail unless="package.ipa.type"
       message="iOS packaging requires you set package.target.ipa.type in your build.properties"/>
-        <set-signing-options target="${package.ipa.type}"/>
+        <set-signing-options target="${package.ipa.type}"
+          storetype="${keystore.type.ios}"
+          keystore="${keystore.path.ios}/${keystore.name.ios}"
+          storepass="${keystore.password.ios}"/>
         <set-adt-arguments
           target="${package.ipa.type}"
           output-file-name="${app.package.filename}${app.package.extension.ios}"/>  

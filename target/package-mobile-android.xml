@@ -2,7 +2,10 @@
   
   <target name="package-mobile-android">
     <generate-app-descriptor/>
-    <set-signing-options target="${package.apk.type}"/>
+    <set-signing-options target="${package.apk.type}"
+      storetype="${keystore.type.android}"
+      keystore="${keystore.path.android}/${keystore.name.android}"
+      storepass="${keystore.password.android}"/>
     <set-adt-arguments
       target="${package.apk.type}"
       output-file-name="${app.package.filename}${app.package.extension.android}"/>  
