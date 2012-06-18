@@ -23,15 +23,16 @@
 
   <macrodef name="copy-config">
     <attribute name="copy-path" default="${build.dir.output}"/>
-    <attribute name="input-file" default="${config.compiler.additional}"/>
+    <attribute name="input-file" default="${compiler.options.default}"/>
+    <attribute name="define-values" default="${compiler.define.values}"/>
     <sequential>
-      <!--var name="file.to.copy" value="${config.compiler.additional}"/-->
       <echo message="copy-config :: attempting to copy and substitute vars in @{input-file}"/>
       <var name="config.copy" value="@{copy-path}/generated-compile-config.xml"/>
       <copy file="@{input-file}" tofile="${config.copy}" overwrite="true" verbose="true"/>
       <replace file="${config.copy}" token="[buildsupport]" value="${buildsupport.dir}"/>
       <replace file="${config.copy}" token="[project-dir]" value="${project.dir}"/>
       <replace file="${config.copy}" token="[flex-home]" value="${flex.dir.home}"/>
+      <replace file="${config.copy}" token="[compiler-define-values]" value="@{define-values}"/>
     </sequential>
   </macrodef>
 
